@@ -1,0 +1,42 @@
+services:
+  hyk-portfolio-back:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: junhyeokshin/hyk-portfolio-back
+    container_name: hyk-portfolio-back
+    ports:
+      - "4000:4000"
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    depends_on:
+      hyk-portfolio-db:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - hyk-portfolio-network
+
+  hyk-portfolio-db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    image: junhyeokshin/hyk-portfolio-db
+    container_name: hyk-portfolio-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./db/data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${SPRING_DATASOURCE_USERNAME}",
+              "-p${SPRING_DATASOURCE_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - hyk-portfolio-network
+
+networks:
+  hyk-portfolio-network:

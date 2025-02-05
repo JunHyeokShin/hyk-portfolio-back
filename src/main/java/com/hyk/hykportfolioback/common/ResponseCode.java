@@ -11,6 +11,9 @@ public interface ResponseCode {
   String NOT_EXISTED_PROJECT = "NEP";
   String NOT_EXISTED_POST = "NEP";
 
+  // HTTP Status 401
+  String AUTHORIZATION_FAILED = "AF";
+
   // HTTP Status 403
   String NO_PERMISSION = "NP";
 

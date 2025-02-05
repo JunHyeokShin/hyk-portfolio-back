@@ -8,6 +8,8 @@ spring:
       max-file-size: 16MB
       max-request-size: 16MB
   datasource:
+    hikari:
+      connection-timeout: 5000
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}

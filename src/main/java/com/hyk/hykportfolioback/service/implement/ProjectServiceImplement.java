@@ -29,7 +29,7 @@ public class ProjectServiceImplement implements ProjectService {
       resultSets = projectRepository.findProjectListBy();
     } catch (Exception exception) {
       exception.printStackTrace();
-      ResponseDto.databaseError();
+      return ResponseDto.databaseError();
     }
 
     return GetProjectListResponseDto.success(resultSets);

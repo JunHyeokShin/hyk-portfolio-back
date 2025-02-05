@@ -27,6 +27,5 @@ public class ProjectController {
     ResponseEntity<? super PostProjectResponseDto> response = projectService.postProject(requestBody);
     return response;
   }
-
-
+  
 }

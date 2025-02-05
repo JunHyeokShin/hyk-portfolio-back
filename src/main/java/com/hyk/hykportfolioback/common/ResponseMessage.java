@@ -11,6 +11,9 @@ public interface ResponseMessage {
   String NOT_EXISTED_PROJECT = "This project does not exist.";
   String NOT_EXISTED_POST = "This post does not exist.";
 
+  // HTTP Status 401
+  String AUTHORIZATION_FAILED = "Authorization Failed.";
+  
   // HTTP Status 403
   String NO_PERMISSION = "Do not have permission.";
 

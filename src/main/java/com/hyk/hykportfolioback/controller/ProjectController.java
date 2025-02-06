@@ -1,10 +1,7 @@
 package com.hyk.hykportfolioback.controller;
 
 import com.hyk.hykportfolioback.dto.request.project.PostProjectRequestDto;
-import com.hyk.hykportfolioback.dto.response.project.GetProjectListResponseDto;
-import com.hyk.hykportfolioback.dto.response.project.PostProjectResourceResponseDto;
-import com.hyk.hykportfolioback.dto.response.project.PostProjectResponseDto;
-import com.hyk.hykportfolioback.dto.response.project.PostProjectThumbnailResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.*;
 import com.hyk.hykportfolioback.service.ProjectService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -24,6 +21,12 @@ public class ProjectController {
   @GetMapping("")
   public ResponseEntity<? super GetProjectListResponseDto> getProjectList() {
     ResponseEntity<? super GetProjectListResponseDto> response = projectService.getProjectList();
+    return response;
+  }
+
+  @GetMapping("/{id}/content")
+  public ResponseEntity<? super GetProjectContentResponseDto> getProjectContent(@PathVariable("id") String id) {
+    ResponseEntity<? super GetProjectContentResponseDto> response = projectService.getProjectContent(id);
     return response;
   }
 

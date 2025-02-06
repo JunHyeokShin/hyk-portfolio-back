@@ -2,13 +2,9 @@ package com.hyk.hykportfolioback.service.implement;
 
 import com.hyk.hykportfolioback.dto.request.project.PostProjectRequestDto;
 import com.hyk.hykportfolioback.dto.response.ResponseDto;
-import com.hyk.hykportfolioback.dto.response.project.GetProjectListResponseDto;
-import com.hyk.hykportfolioback.dto.response.project.PostProjectResourceResponseDto;
-import com.hyk.hykportfolioback.dto.response.project.PostProjectResponseDto;
-import com.hyk.hykportfolioback.dto.response.project.PostProjectThumbnailResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.*;
 import com.hyk.hykportfolioback.entity.ProjectEntity;
 import com.hyk.hykportfolioback.repository.ProjectRepository;
-import com.hyk.hykportfolioback.repository.resultSet.GetProjectListResultSet;
 import com.hyk.hykportfolioback.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,16 +33,34 @@ public class ProjectServiceImplement implements ProjectService {
 
   @Override
   public ResponseEntity<? super GetProjectListResponseDto> getProjectList() {
-    List<GetProjectListResultSet> resultSets = new ArrayList<>();
+    List<ProjectEntity> projectEntities = new ArrayList<>();
 
     try {
-      resultSets = projectRepository.findProjectListBy();
+      projectEntities = projectRepository.findAll();
     } catch (Exception exception) {
       exception.printStackTrace();
       return ResponseDto.databaseError();
     }
 
-    return GetProjectListResponseDto.success(resultSets);
+    return GetProjectListResponseDto.success(projectEntities);
+  }
+
+  @Override
+  public ResponseEntity<? super GetProjectContentResponseDto> getProjectContent(String id) {
+    ProjectEntity projectEntity = null;
+
+    try {
+
+      Optional<ProjectEntity> optionalProjectEntity = projectRepository.findById(id);
+      if (optionalProjectEntity.isEmpty()) return GetProjectContentResponseDto.notExistedProject();
+      projectEntity = optionalProjectEntity.get();
+
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      return ResponseDto.databaseError();
+    }
+
+    return GetProjectContentResponseDto.success(projectEntity);
   }
 
   @Override

@@ -1,6 +1,6 @@
 package com.hyk.hykportfolioback.dto.object;
 
-import com.hyk.hykportfolioback.repository.resultSet.GetProjectListResultSet;
+import com.hyk.hykportfolioback.entity.ProjectEntity;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -15,18 +15,18 @@ public class ProjectListItem {
   private String themeColor;
   private String description;
 
-  public ProjectListItem(GetProjectListResultSet resultSet) {
-    this.id = resultSet.getId();
-    this.name = resultSet.getName();
-    this.thumbnail = resultSet.getThumbnail();
-    this.themeColor = resultSet.getThemeColor();
-    this.description = resultSet.getDescription();
+  public ProjectListItem(ProjectEntity projectEntity) {
+    this.id = projectEntity.getId();
+    this.name = projectEntity.getName();
+    this.thumbnail = projectEntity.getThumbnail();
+    this.themeColor = projectEntity.getThemeColor();
+    this.description = projectEntity.getDescription();
   }
 
-  public static List<ProjectListItem> copyList(List<GetProjectListResultSet> resultSets) {
+  public static List<ProjectListItem> copyList(List<ProjectEntity> projectEntities) {
     List<ProjectListItem> list = new ArrayList<>();
-    for (GetProjectListResultSet resultSet : resultSets) {
-      ProjectListItem projectListItem = new ProjectListItem(resultSet);
+    for (ProjectEntity projectEntity : projectEntities) {
+      ProjectListItem projectListItem = new ProjectListItem(projectEntity);
       list.add(projectListItem);
     }
     return list;

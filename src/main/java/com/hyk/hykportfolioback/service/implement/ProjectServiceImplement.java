@@ -4,20 +4,31 @@ import com.hyk.hykportfolioback.dto.request.project.PostProjectRequestDto;
 import com.hyk.hykportfolioback.dto.response.ResponseDto;
 import com.hyk.hykportfolioback.dto.response.project.GetProjectListResponseDto;
 import com.hyk.hykportfolioback.dto.response.project.PostProjectResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.PostProjectThumbnailResponseDto;
 import com.hyk.hykportfolioback.entity.ProjectEntity;
 import com.hyk.hykportfolioback.repository.ProjectRepository;
 import com.hyk.hykportfolioback.repository.resultSet.GetProjectListResultSet;
 import com.hyk.hykportfolioback.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImplement implements ProjectService {
+
+  @Value("${server.domain}")
+  private String domain;
+  @Value("${server.port}")
+  private String port;
 
   private final ProjectRepository projectRepository;
 
@@ -50,6 +61,34 @@ public class ProjectServiceImplement implements ProjectService {
     }
 
     return PostProjectResponseDto.success();
+  }
+
+  @Override
+  public ResponseEntity<? super PostProjectThumbnailResponseDto> postProjectThumbnail(String id, MultipartFile file) {
+    if (file.isEmpty()) return ResponseDto.emptyFile();
+
+    String originalFilename = file.getOriginalFilename();
+    String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+    String savePath = getSavePath(id, extension);
+
+    try {
+      Path path = Paths.get(savePath);
+      Files.createDirectories(path.getParent());
+      file.transferTo(path.toFile());
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      return ResponseDto.fileSaveError();
+    }
+
+    return PostProjectThumbnailResponseDto.success(getFileUrl(id, extension));
+  }
+
+  private String getSavePath(String id, String extension) {
+    return System.getProperty("user.dir") + "/resources/project/" + id + "/thumbnail" + extension;
+  }
+
+  private String getFileUrl(String id, String extension) {
+    return "http://" + domain + ":" + port + "/resources/project/" + id + "/thumbnail" + extension;
   }
 
 }

@@ -24,4 +24,14 @@ public class ResponseDto {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
   }
 
+  public static ResponseEntity<ResponseDto> emptyFile() {
+    ResponseDto result = new ResponseDto(ResponseCode.EMPTY_FILE, ResponseMessage.EMPTY_FILE);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+  }
+
+  public static ResponseEntity<ResponseDto> fileSaveError() {
+    ResponseDto result = new ResponseDto(ResponseCode.FILE_SAVE_ERROR, ResponseMessage.FILE_SAVE_ERROR);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+  }
+
 }

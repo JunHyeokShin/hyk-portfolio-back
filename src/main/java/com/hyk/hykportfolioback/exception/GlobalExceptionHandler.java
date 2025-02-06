@@ -6,13 +6,19 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 @RestControllerAdvice
-public class BadRequestExceptionHandler {
+public class GlobalExceptionHandler {
 
   @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
   public ResponseEntity<ResponseDto> validationExceptionHandler(Exception exception) {
     return ResponseDto.validationFailed();
+  }
+
+  @ExceptionHandler({MultipartException.class})
+  public ResponseEntity<ResponseDto> notMultipartRequestExceptionHandler(Exception exception) {
+    return ResponseDto.emptyFile();
   }
 
 }

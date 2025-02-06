@@ -8,9 +8,12 @@ services:
     ports:
       - "4000:4000"
     environment:
+      SERVER_DOMAIN: ${SERVER_DOMAIN}
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - ./resources:/app/resources
     depends_on:
       hyk-portfolio-db:
         condition: service_healthy

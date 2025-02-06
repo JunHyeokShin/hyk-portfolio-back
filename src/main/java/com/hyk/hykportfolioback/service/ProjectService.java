@@ -2,6 +2,7 @@ package com.hyk.hykportfolioback.service;
 
 import com.hyk.hykportfolioback.dto.request.project.PostProjectRequestDto;
 import com.hyk.hykportfolioback.dto.response.project.GetProjectListResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.PostProjectResourceResponseDto;
 import com.hyk.hykportfolioback.dto.response.project.PostProjectResponseDto;
 import com.hyk.hykportfolioback.dto.response.project.PostProjectThumbnailResponseDto;
 import org.springframework.http.ResponseEntity;
@@ -14,5 +15,7 @@ public interface ProjectService {
   ResponseEntity<? super PostProjectResponseDto> postProject(PostProjectRequestDto dto);
 
   ResponseEntity<? super PostProjectThumbnailResponseDto> postProjectThumbnail(String id, MultipartFile file);
+
+  ResponseEntity<? super PostProjectResourceResponseDto> postProjectResource(String id, MultipartFile file);
 
 }

@@ -3,6 +3,7 @@ package com.hyk.hykportfolioback.service.implement;
 import com.hyk.hykportfolioback.dto.request.project.PostProjectRequestDto;
 import com.hyk.hykportfolioback.dto.response.ResponseDto;
 import com.hyk.hykportfolioback.dto.response.project.GetProjectListResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.PostProjectResourceResponseDto;
 import com.hyk.hykportfolioback.dto.response.project.PostProjectResponseDto;
 import com.hyk.hykportfolioback.dto.response.project.PostProjectThumbnailResponseDto;
 import com.hyk.hykportfolioback.entity.ProjectEntity;
@@ -73,7 +74,8 @@ public class ProjectServiceImplement implements ProjectService {
       File[] resources = directory.listFiles();
       if (resources != null) {
         for (File resource : resources) {
-          if (resource.isFile() && resource.getName().substring(0, resource.getName().lastIndexOf(".")).equals("thumbnail")) {
+          if (resource.isFile() && resource.getName().substring(0, resource.getName().lastIndexOf("."))
+                                           .equals("thumbnail")) {
             resource.delete();
           }
         }
@@ -87,7 +89,27 @@ public class ProjectServiceImplement implements ProjectService {
       Files.createDirectories(path.getParent());
       file.transferTo(path.toFile());
 
-      return PostProjectThumbnailResponseDto.success("http://" + domain + ":" + port + "/resources/project/" + id + "/thumbnail" + extension);
+      return PostProjectThumbnailResponseDto.success("http://" + domain + ":" + port + "/resources/project/" + id +
+          "/thumbnail" + extension);
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      return ResponseDto.fileSaveError();
+    }
+  }
+
+  @Override
+  public ResponseEntity<? super PostProjectResourceResponseDto> postProjectResource(String id, MultipartFile file) {
+    if (file.isEmpty()) return ResponseDto.emptyFile();
+
+    try {
+      String savePath = System.getProperty("user.dir") + "/resources/project/" + id + "/" + file.getOriginalFilename();
+
+      Path path = Paths.get(savePath);
+      Files.createDirectories(path.getParent());
+      file.transferTo(path.toFile());
+
+      return PostProjectResourceResponseDto.success("http://" + domain + ":" + port + "/resources/project/" + id +
+          "/" + file.getOriginalFilename());
     } catch (Exception exception) {
       exception.printStackTrace();
       return ResponseDto.fileSaveError();

@@ -2,6 +2,7 @@ package com.hyk.hykportfolioback.controller;
 
 import com.hyk.hykportfolioback.dto.request.project.PostProjectRequestDto;
 import com.hyk.hykportfolioback.dto.response.project.GetProjectListResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.PostProjectResourceResponseDto;
 import com.hyk.hykportfolioback.dto.response.project.PostProjectResponseDto;
 import com.hyk.hykportfolioback.dto.response.project.PostProjectThumbnailResponseDto;
 import com.hyk.hykportfolioback.service.ProjectService;
@@ -35,6 +36,12 @@ public class ProjectController {
   @PostMapping("/{id}/thumbnail")
   public ResponseEntity<? super PostProjectThumbnailResponseDto> postProjectThumbnail(@PathVariable("id") @NotBlank @Size(max = 128) String id, @RequestParam MultipartFile file) {
     ResponseEntity<? super PostProjectThumbnailResponseDto> response = projectService.postProjectThumbnail(id, file);
+    return response;
+  }
+
+  @PostMapping("/{id}/resource")
+  public ResponseEntity<? super PostProjectResourceResponseDto> postProjectResource(@PathVariable("id") String id, @RequestParam MultipartFile file) {
+    ResponseEntity<? super PostProjectResourceResponseDto> response = projectService.postProjectResource(id, file);
     return response;
   }
 

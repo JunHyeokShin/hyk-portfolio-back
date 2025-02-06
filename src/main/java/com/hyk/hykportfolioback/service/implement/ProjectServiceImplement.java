@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -67,28 +68,30 @@ public class ProjectServiceImplement implements ProjectService {
   public ResponseEntity<? super PostProjectThumbnailResponseDto> postProjectThumbnail(String id, MultipartFile file) {
     if (file.isEmpty()) return ResponseDto.emptyFile();
 
-    String originalFilename = file.getOriginalFilename();
-    String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-    String savePath = getSavePath(id, extension);
-
     try {
+      File directory = new File(System.getProperty("user.dir") + "/resources/project/" + id + "/");
+      File[] resources = directory.listFiles();
+      if (resources != null) {
+        for (File resource : resources) {
+          if (resource.isFile() && resource.getName().substring(0, resource.getName().lastIndexOf(".")).equals("thumbnail")) {
+            resource.delete();
+          }
+        }
+      }
+
+      String originalFilename = file.getOriginalFilename();
+      String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+      String savePath = System.getProperty("user.dir") + "/resources/project/" + id + "/thumbnail" + extension;
+
       Path path = Paths.get(savePath);
       Files.createDirectories(path.getParent());
       file.transferTo(path.toFile());
+
+      return PostProjectThumbnailResponseDto.success("http://" + domain + ":" + port + "/resources/project/" + id + "/thumbnail" + extension);
     } catch (Exception exception) {
       exception.printStackTrace();
       return ResponseDto.fileSaveError();
     }
-
-    return PostProjectThumbnailResponseDto.success(getFileUrl(id, extension));
-  }
-
-  private String getSavePath(String id, String extension) {
-    return System.getProperty("user.dir") + "/resources/project/" + id + "/thumbnail" + extension;
-  }
-
-  private String getFileUrl(String id, String extension) {
-    return "http://" + domain + ":" + port + "/resources/project/" + id + "/thumbnail" + extension;
   }
 
 }

@@ -39,3 +39,4 @@ out/
 application-dev.yml
 .env*
 db/data/
+resources/

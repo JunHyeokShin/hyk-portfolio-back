@@ -35,7 +35,7 @@ public class SecurityConfig {
         .cors(cors -> cors
             .configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(HttpMethod.GET, "/api/v1/project/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/v1/project/**", "/resources/**").permitAll()
             .anyRequest().authenticated()
         )
         .exceptionHandling((exceptionHandling) -> exceptionHandling

@@ -21,8 +21,6 @@ public class APIKeyAuthenticationFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     String receivedAPIKey = request.getHeader("API-KEY");
-    System.out.println("receivedAPIKey: " + receivedAPIKey);
-    System.out.println("expectedAPIKey: " + expectedAPIKey);
 
     if (expectedAPIKey.equals(receivedAPIKey)) {
       Authentication authentication = new APIKeyAuthentication(receivedAPIKey);

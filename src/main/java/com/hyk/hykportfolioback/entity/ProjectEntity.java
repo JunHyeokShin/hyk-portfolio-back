@@ -22,8 +22,8 @@ public class ProjectEntity {
   private String themeColor;
   private String description;
   private String content;
-  private int comment_count;
-  private int view_count;
+  private int commentCount;
+  private int viewCount;
 
   public ProjectEntity(PostProjectRequestDto dto) {
     this.id = dto.getId();
@@ -32,6 +32,10 @@ public class ProjectEntity {
     this.themeColor = dto.getThemeColor();
     this.description = dto.getDescription();
     this.content = dto.getContent();
+  }
+
+  public void increaseViewCount() {
+    this.viewCount++;
   }
 
 }

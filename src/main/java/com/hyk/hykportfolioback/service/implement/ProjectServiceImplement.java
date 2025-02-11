@@ -54,7 +54,8 @@ public class ProjectServiceImplement implements ProjectService {
       Optional<ProjectEntity> optionalProjectEntity = projectRepository.findById(id);
       if (optionalProjectEntity.isEmpty()) return GetProjectContentResponseDto.notExistedProject();
       projectEntity = optionalProjectEntity.get();
-
+      projectEntity.increaseViewCount();
+      projectRepository.save(projectEntity);
     } catch (Exception exception) {
       exception.printStackTrace();
       return ResponseDto.databaseError();

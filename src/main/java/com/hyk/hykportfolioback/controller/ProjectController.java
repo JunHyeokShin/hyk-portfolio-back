@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/project")
 @RequiredArgsConstructor
@@ -37,14 +39,16 @@ public class ProjectController {
   }
 
   @PostMapping("/{id}/thumbnail")
-  public ResponseEntity<? super PostProjectThumbnailResponseDto> postProjectThumbnail(@PathVariable("id") @NotBlank @Size(max = 128) String id, @RequestParam MultipartFile file) {
+  public ResponseEntity<? super PostProjectThumbnailResponseDto> postProjectThumbnail(@PathVariable("id") @NotBlank @Size(max = 128) String id,
+                                                                                      @RequestParam MultipartFile file) {
     ResponseEntity<? super PostProjectThumbnailResponseDto> response = projectService.postProjectThumbnail(id, file);
     return response;
   }
 
-  @PostMapping("/{id}/resource")
-  public ResponseEntity<? super PostProjectResourceResponseDto> postProjectResource(@PathVariable("id") String id, @RequestParam MultipartFile file) {
-    ResponseEntity<? super PostProjectResourceResponseDto> response = projectService.postProjectResource(id, file);
+  @PostMapping("/{id}/resources")
+  public ResponseEntity<? super PostProjectResourcesResponseDto> postProjectResources(@PathVariable("id") String id,
+                                                                                      @RequestParam List<MultipartFile> files) {
+    ResponseEntity<? super PostProjectResourcesResponseDto> response = projectService.postProjectResources(id, files);
     return response;
   }
 

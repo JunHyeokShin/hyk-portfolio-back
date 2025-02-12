@@ -1,5 +1,5 @@
+domain: ${DOMAIN}
 server:
-  domain: ${SERVER_DOMAIN}
   port: 4000
 spring:
   application:

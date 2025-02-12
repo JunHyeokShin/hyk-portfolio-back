@@ -7,18 +7,20 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 @Getter
-public class PostProjectResourceResponseDto extends ResponseDto {
+public class PostProjectResourcesResponseDto extends ResponseDto {
 
-  private final String url;
+  private final List<String> urls;
 
-  private PostProjectResourceResponseDto(String url) {
+  private PostProjectResourcesResponseDto(List<String> urls) {
     super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-    this.url = url;
+    this.urls = urls;
   }
 
-  public static ResponseEntity<PostProjectResourceResponseDto> success(String url) {
-    PostProjectResourceResponseDto result = new PostProjectResourceResponseDto(url);
+  public static ResponseEntity<PostProjectResourcesResponseDto> success(List<String> urls) {
+    PostProjectResourcesResponseDto result = new PostProjectResourcesResponseDto(urls);
     return ResponseEntity.status(HttpStatus.OK).body(result);
   }
 

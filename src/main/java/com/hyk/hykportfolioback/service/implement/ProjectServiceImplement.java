@@ -39,7 +39,7 @@ public class ProjectServiceImplement implements ProjectService {
     List<ProjectEntity> projectEntities = new ArrayList<>();
 
     try {
-      projectEntities = projectRepository.findAll();
+      projectEntities = projectRepository.findAllByOrderByCreatedAtDesc();
     } catch (Exception exception) {
       exception.printStackTrace();
       return ResponseDto.databaseError();

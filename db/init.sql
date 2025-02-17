@@ -3,7 +3,7 @@ CREATE TABLE project
     id            VARCHAR(128) NOT NULL COMMENT '프로젝트 식별 문자열',
     name          TEXT         NOT NULL COMMENT '프로젝트 이름',
     thumbnail     TEXT         NULL COMMENT '썸네일',
-    theme_color   VARCHAR(7)   NULL COMMENT '테마 색상값',
+    theme_color   VARCHAR(7)   NOT NULL COMMENT '테마 색상값',
     description   TEXT         NOT NULL COMMENT '프로젝트 설명',
     content       TEXT         NOT NULL COMMENT '프로젝트 내용',
     comment_count INT          NOT NULL DEFAULT 0 COMMENT '프로젝트 댓글 수',
@@ -11,19 +11,12 @@ CREATE TABLE project
     PRIMARY KEY (id)
 ) COMMENT '프로젝트 테이블';
 
-CREATE TABLE project_resource
-(
-    file_name  VARCHAR(128) NOT NULL COMMENT '파일 이름',
-    project_id INT          NOT NULL COMMENT '프로젝트 식별 문자열',
-    PRIMARY KEY (file_name, project_id)
-) COMMENT '프로젝트 리소스 테이블';
-
 CREATE TABLE post
 (
     id            INT        NOT NULL AUTO_INCREMENT COMMENT '게시물 번호',
     title         TEXT       NOT NULL COMMENT '게시물 제목',
     thumbnail     TEXT       NULL COMMENT '썸네일',
-    theme_color   VARCHAR(7) NULL COMMENT '테마 색상값',
+    theme_color   VARCHAR(7) NOT NULL COMMENT '테마 색상값',
     content       TEXT       NOT NULL COMMENT '게시물 내용',
     comment_count INT        NOT NULL DEFAULT 0 COMMENT '게시물 댓글 수',
     view_count    INT        NOT NULL DEFAULT 0 COMMENT '게시물 조회 수',
@@ -31,13 +24,6 @@ CREATE TABLE post
     updated_at    DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '게시물 수정 날짜 및 시간',
     PRIMARY KEY (id)
 ) COMMENT '게시물 테이블';
-
-CREATE TABLE post_resource
-(
-    file_name VARCHAR(128) NOT NULL COMMENT '파일 이름',
-    post_id   INT          NOT NULL COMMENT '게시물 번호',
-    PRIMARY KEY (file_name, post_id)
-) COMMENT '게시물 리소스 테이블';
 
 CREATE TABLE project_comment
 (

@@ -2,17 +2,20 @@ package com.hyk.hykportfolioback.service.implement;
 
 import com.hyk.hykportfolioback.dto.request.project.PostProjectRequestDto;
 import com.hyk.hykportfolioback.dto.response.ResponseDto;
-import com.hyk.hykportfolioback.dto.response.project.*;
+import com.hyk.hykportfolioback.dto.response.project.GetProjectContentResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.GetProjectListResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.PostProjectResponseDto;
 import com.hyk.hykportfolioback.entity.ProjectEntity;
 import com.hyk.hykportfolioback.repository.ProjectRepository;
 import com.hyk.hykportfolioback.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +26,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProjectServiceImplement implements ProjectService {
 
   @Value("${domain}")
@@ -65,65 +69,52 @@ public class ProjectServiceImplement implements ProjectService {
 
   @Override
   public ResponseEntity<? super PostProjectResponseDto> postProject(PostProjectRequestDto dto) {
+    String id = dto.getId();
+    String thumbnail = null;
+    MultipartFile thumbnailFile = dto.getThumbnailFile();
+    List<MultipartFile> resourceFiles = dto.getResourceFiles();
+    List<Path> savedPaths = new ArrayList<>();
+
     try {
-      String id = dto.getId();
       boolean existsId = projectRepository.existsById(id);
       if (existsId) return PostProjectResponseDto.duplicateId();
 
-      ProjectEntity projectEntity = new ProjectEntity(dto);
+      if (thumbnailFile != null) {
+        if (thumbnailFile.isEmpty()) return ResponseDto.emptyFile();
+
+        String savePathString = createThumbnailSavePath(id, thumbnailFile);
+        Path savePath = Paths.get(savePathString);
+        saveFile(thumbnailFile, savePath);
+        savedPaths.add(savePath);
+        thumbnail = domain + "/resources/project/" + id + "/thumbnail" + getFileExtension(thumbnailFile);
+      }
+
+      if (!resourceFiles.isEmpty()) {
+        for (MultipartFile resourceFile : resourceFiles) {
+          if (resourceFile.isEmpty()) {
+            deleteProjectDirectory(id);
+            return ResponseDto.emptyFile();
+          }
+          String savePathString = createResourceSavePath(id, resourceFile);
+          Path savePath = Paths.get(savePathString);
+          saveFile(resourceFile, savePath);
+          savedPaths.add(savePath);
+        }
+      }
+
+      ProjectEntity projectEntity = new ProjectEntity(dto, thumbnail);
       projectRepository.save(projectEntity);
+    } catch (IOException exception) {
+      exception.printStackTrace();
+      deleteProjectDirectory(id);
+      return ResponseDto.fileSaveError();
     } catch (Exception exception) {
       exception.printStackTrace();
+      deleteProjectDirectory(id);
       return ResponseDto.databaseError();
     }
 
     return PostProjectResponseDto.success();
-  }
-
-  @Override
-  public ResponseEntity<? super PostProjectThumbnailResponseDto> postProjectThumbnail(String id, MultipartFile file) {
-    if (file.isEmpty()) return ResponseDto.emptyFile();
-
-    try {
-      String savePathString = createThumbnailSavePath(id, file);
-      Path savePath = Paths.get(savePathString);
-      deleteExistingThumbnail(savePath);
-      saveFile(file, savePath);
-      String url = domain + "/resources/project/" + id + "/thumbnail" + getFileExtension(file);
-      return PostProjectThumbnailResponseDto.success(url);
-    } catch (Exception exception) {
-      exception.printStackTrace();
-      return ResponseDto.fileSaveError();
-    }
-  }
-
-  @Override
-  public ResponseEntity<? super PostProjectResourcesResponseDto> postProjectResources(String id,
-                                                                                      List<MultipartFile> files) {
-    List<String> urls = new ArrayList<>();
-    List<Path> savedFiles = new ArrayList<>();
-
-    for (MultipartFile file : files) {
-      if (file.isEmpty()) {
-        rollback(savedFiles);
-        return ResponseDto.emptyFile();
-      }
-
-      try {
-        String savePathString = createResourceSavePath(id, file);
-        Path savePath = Paths.get(savePathString);
-        saveFile(file, savePath);
-        savedFiles.add(savePath);
-        String url = domain + "/resources/project/" + id + "/" + file.getOriginalFilename();
-        urls.add(url);
-      } catch (Exception exception) {
-        exception.printStackTrace();
-        rollback(savedFiles);
-        return ResponseDto.fileSaveError();
-      }
-    }
-
-    return PostProjectResourcesResponseDto.success(urls);
   }
 
   private String createThumbnailSavePath(String id, MultipartFile file) {
@@ -140,37 +131,18 @@ public class ProjectServiceImplement implements ProjectService {
     return originalFilename.substring(originalFilename.lastIndexOf("."));
   }
 
-  private void deleteExistingThumbnail(Path savePath) throws IOException {
-    File parentDirectory = savePath.getParent().toFile();
-    File[] resources = parentDirectory.listFiles();
-
-    if (resources == null) return;
-
-    for (File resource : resources) {
-      if (isThumbnailFile(resource)) resource.delete();
-    }
-
-  }
-
-  private boolean isThumbnailFile(File file) {
-    if (!file.isFile()) return false;
-
-    String resourceFilenameWithoutExtension = file.getName().substring(0, file.getName().lastIndexOf("."));
-    return resourceFilenameWithoutExtension.equals("thumbnail");
-  }
-
   private void saveFile(MultipartFile file, Path savePath) throws IOException {
     Files.createDirectories(savePath.getParent());
     file.transferTo(savePath.toFile());
   }
 
-  private void rollback(List<Path> savedFiles) {
-    for (Path filePath : savedFiles) {
-      try {
-        Files.deleteIfExists(filePath);
-      } catch (Exception exception) {
-        exception.printStackTrace();
-      }
+  private void deleteProjectDirectory(String id) {
+    try {
+      System.out.println("deleteProjectDirectory");
+      Path path = Paths.get(System.getProperty("user.dir") + "/resources/project/" + id);
+      FileUtils.deleteDirectory(path.toFile());
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
   }
 

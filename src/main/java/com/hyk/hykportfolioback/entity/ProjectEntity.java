@@ -25,10 +25,10 @@ public class ProjectEntity {
   private int commentCount;
   private int viewCount;
 
-  public ProjectEntity(PostProjectRequestDto dto) {
+  public ProjectEntity(PostProjectRequestDto dto, String thumbnail) {
     this.id = dto.getId();
     this.name = dto.getName();
-    this.thumbnail = dto.getThumbnail();
+    this.thumbnail = thumbnail;
     this.themeColor = dto.getThemeColor();
     this.description = dto.getDescription();
     this.content = dto.getContent();

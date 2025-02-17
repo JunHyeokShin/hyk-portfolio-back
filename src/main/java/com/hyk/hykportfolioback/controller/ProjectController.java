@@ -1,17 +1,14 @@
 package com.hyk.hykportfolioback.controller;
 
 import com.hyk.hykportfolioback.dto.request.project.PostProjectRequestDto;
-import com.hyk.hykportfolioback.dto.response.project.*;
+import com.hyk.hykportfolioback.dto.response.project.GetProjectContentResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.GetProjectListResponseDto;
+import com.hyk.hykportfolioback.dto.response.project.PostProjectResponseDto;
 import com.hyk.hykportfolioback.service.ProjectService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/project")
@@ -33,22 +30,8 @@ public class ProjectController {
   }
 
   @PostMapping("")
-  public ResponseEntity<? super PostProjectResponseDto> postProject(@RequestBody @Valid PostProjectRequestDto requestBody) {
-    ResponseEntity<? super PostProjectResponseDto> response = projectService.postProject(requestBody);
-    return response;
-  }
-
-  @PostMapping("/{id}/thumbnail")
-  public ResponseEntity<? super PostProjectThumbnailResponseDto> postProjectThumbnail(@PathVariable("id") @NotBlank @Size(max = 128) String id,
-                                                                                      @RequestParam MultipartFile file) {
-    ResponseEntity<? super PostProjectThumbnailResponseDto> response = projectService.postProjectThumbnail(id, file);
-    return response;
-  }
-
-  @PostMapping("/{id}/resources")
-  public ResponseEntity<? super PostProjectResourcesResponseDto> postProjectResources(@PathVariable("id") String id,
-                                                                                      @RequestParam List<MultipartFile> files) {
-    ResponseEntity<? super PostProjectResourcesResponseDto> response = projectService.postProjectResources(id, files);
+  public ResponseEntity<? super PostProjectResponseDto> postProject(@ModelAttribute @Valid PostProjectRequestDto request) {
+    ResponseEntity<? super PostProjectResponseDto> response = projectService.postProject(request);
     return response;
   }
 

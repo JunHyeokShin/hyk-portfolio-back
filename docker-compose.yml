@@ -18,7 +18,6 @@ services:
     depends_on:
       hyk-portfolio-db:
         condition: service_healthy
-    restart: on-failure
     networks:
       - hyk-portfolio-network
 

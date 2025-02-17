@@ -89,7 +89,7 @@ public class ProjectServiceImplement implements ProjectService {
         thumbnail = domain + "/resources/project/" + id + "/thumbnail" + getFileExtension(thumbnailFile);
       }
 
-      if (!resourceFiles.isEmpty()) {
+      if (resourceFiles != null) {
         for (MultipartFile resourceFile : resourceFiles) {
           if (resourceFile.isEmpty()) {
             deleteProjectDirectory(id);
@@ -138,7 +138,6 @@ public class ProjectServiceImplement implements ProjectService {
 
   private void deleteProjectDirectory(String id) {
     try {
-      System.out.println("deleteProjectDirectory");
       Path path = Paths.get(System.getProperty("user.dir") + "/resources/project/" + id);
       FileUtils.deleteDirectory(path.toFile());
     } catch (Exception exception) {

@@ -1,6 +1,7 @@
 package com.hyk.hykportfolioback.entity;
 
 import com.hyk.hykportfolioback.dto.request.project.PostProjectRequestDto;
+import com.hyk.hykportfolioback.dto.request.project.PutProjectRequestDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -46,6 +47,14 @@ public class ProjectEntity {
 
   public void increaseViewCount() {
     this.viewCount++;
+  }
+
+  public void updateProject(PutProjectRequestDto dto, String thumbnail) {
+    this.name = dto.getName();
+    this.thumbnail = thumbnail;
+    this.themeColor = dto.getThemeColor();
+    this.description = dto.getDescription();
+    this.content = dto.getContent();
   }
 
 }

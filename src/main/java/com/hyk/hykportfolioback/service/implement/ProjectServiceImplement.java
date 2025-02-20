@@ -206,6 +206,24 @@ public class ProjectServiceImplement implements ProjectService {
     return PutProjectResponseDto.success();
   }
 
+  @Override
+  public ResponseEntity<? super DeleteProjectResponseDto> deleteProject(String id) {
+    try {
+      Optional<ProjectEntity> optionalProjectEntity = projectRepository.findById(id);
+      if (optionalProjectEntity.isEmpty()) return DeleteProjectResponseDto.notExistedProject();
+      ProjectEntity projectEntity = optionalProjectEntity.get();
+
+      projectRepository.delete(projectEntity);
+
+      deleteProjectDirectory(id);
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      return ResponseDto.databaseError();
+    }
+
+    return DeleteProjectResponseDto.success();
+  }
+
   private String createThumbnailSavePath(String id, MultipartFile file) {
     String fileExtension = getFileExtension(file);
     return System.getProperty("user.dir") + "/resources/project/" + id + "/thumbnail" + fileExtension;

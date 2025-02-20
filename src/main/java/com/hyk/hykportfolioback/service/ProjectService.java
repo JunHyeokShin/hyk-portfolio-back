@@ -17,4 +17,6 @@ public interface ProjectService {
 
   ResponseEntity<? super PutProjectResponseDto> updateProject(String id, PutProjectRequestDto dto);
 
+  ResponseEntity<? super DeleteProjectResponseDto> deleteProject(String id);
+
 }

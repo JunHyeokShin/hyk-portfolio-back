@@ -2,6 +2,7 @@ package com.hyk.hykportfolioback.controller;
 
 import com.hyk.hykportfolioback.dto.response.post.GetPostContentResponseDto;
 import com.hyk.hykportfolioback.dto.response.post.GetPostListResponseDto;
+import com.hyk.hykportfolioback.dto.response.post.GetPostResponseDto;
 import com.hyk.hykportfolioback.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,12 @@ public class PostController {
   @GetMapping("")
   public ResponseEntity<? super GetPostListResponseDto> getPostList() {
     ResponseEntity<? super GetPostListResponseDto> response = postService.getPostList();
+    return response;
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<? super GetPostResponseDto> getPost(@PathVariable("id") Integer id) {
+    ResponseEntity<? super GetPostResponseDto> response = postService.getPost(id);
     return response;
   }
 

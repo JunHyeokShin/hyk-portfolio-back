@@ -8,8 +8,8 @@ import com.hyk.hykportfolioback.dto.response.project.*;
 import com.hyk.hykportfolioback.entity.ProjectEntity;
 import com.hyk.hykportfolioback.repository.ProjectRepository;
 import com.hyk.hykportfolioback.service.ProjectService;
+import com.hyk.hykportfolioback.util.ResourceUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class ProjectServiceImplement implements ProjectService {
       if (resources == null) return GetProjectResponseDto.success(projectEntity, resourceList);
 
       for (File resource : resources) {
-        if (!isThumbnailFile(resource)) {
+        if (!ResourceUtils.isThumbnailFile(resource)) {
           String fileName = resource.getName();
           String url = domain + "/resources/project/" + id + "/" + fileName;
           ResourceListItem resourceListItem = new ResourceListItem(fileName, url);
@@ -110,21 +109,21 @@ public class ProjectServiceImplement implements ProjectService {
       if (thumbnailFile != null) {
         if (thumbnailFile.isEmpty()) return ResponseDto.emptyFile();
 
-        String savePathString = createThumbnailSavePath(id, thumbnailFile);
+        String savePathString = ResourceUtils.createProjectThumbnailSavePath(id, thumbnailFile);
         Path savePath = Paths.get(savePathString);
-        saveFile(thumbnailFile, savePath);
-        thumbnail = domain + "/resources/project/" + id + "/thumbnail" + getFileExtension(thumbnailFile);
+        ResourceUtils.saveFile(thumbnailFile, savePath);
+        thumbnail = domain + "/resources/project/" + id + "/thumbnail" + ResourceUtils.getFileExtension(thumbnailFile);
       }
 
       if (resourceFiles != null) {
         for (MultipartFile resourceFile : resourceFiles) {
           if (resourceFile.isEmpty()) {
-            deleteProjectDirectory(id);
+            ResourceUtils.deleteProjectDirectory(id);
             return ResponseDto.emptyFile();
           }
-          String savePathString = createResourceSavePath(id, resourceFile);
+          String savePathString = ResourceUtils.createProjectResourceSavePath(id, resourceFile);
           Path savePath = Paths.get(savePathString);
-          saveFile(resourceFile, savePath);
+          ResourceUtils.saveFile(resourceFile, savePath);
         }
       }
 
@@ -132,11 +131,11 @@ public class ProjectServiceImplement implements ProjectService {
       projectRepository.save(projectEntity);
     } catch (IOException exception) {
       exception.printStackTrace();
-      deleteProjectDirectory(id);
+      ResourceUtils.deleteProjectDirectory(id);
       return ResponseDto.fileSaveError();
     } catch (Exception exception) {
       exception.printStackTrace();
-      deleteProjectDirectory(id);
+      ResourceUtils.deleteProjectDirectory(id);
       return ResponseDto.databaseError();
     }
 
@@ -166,21 +165,21 @@ public class ProjectServiceImplement implements ProjectService {
           tempDirectory.renameTo(directory);
           return ResponseDto.emptyFile();
         }
-        String savePathString = createThumbnailSavePath(id, thumbnailFile);
+        String savePathString = ResourceUtils.createProjectThumbnailSavePath(id, thumbnailFile);
         Path savePath = Paths.get(savePathString);
-        saveFile(thumbnailFile, savePath);
-        thumbnail = domain + "/resources/project/" + id + "/thumbnail" + getFileExtension(thumbnailFile);
+        ResourceUtils.saveFile(thumbnailFile, savePath);
+        thumbnail = domain + "/resources/project/" + id + "/thumbnail" + ResourceUtils.getFileExtension(thumbnailFile);
       }
 
       if (resourceFiles != null) {
         for (MultipartFile resourceFile : resourceFiles) {
           if (resourceFile.isEmpty()) {
-            deleteProjectDirectory(id);
+            ResourceUtils.deleteProjectDirectory(id);
             return ResponseDto.emptyFile();
           }
-          String savePathString = createResourceSavePath(id, resourceFile);
+          String savePathString = ResourceUtils.createProjectResourceSavePath(id, resourceFile);
           Path savePath = Paths.get(savePathString);
-          saveFile(resourceFile, savePath);
+          ResourceUtils.saveFile(resourceFile, savePath);
         }
       }
 
@@ -188,15 +187,15 @@ public class ProjectServiceImplement implements ProjectService {
       projectEntity.updateProject(dto, thumbnail);
       projectRepository.save(projectEntity);
 
-      deleteProjectDirectory(id + "_temp");
+      ResourceUtils.deleteProjectDirectory(id + "_temp");
     } catch (IOException exception) {
       exception.printStackTrace();
-      deleteProjectDirectory(id);
+      ResourceUtils.deleteProjectDirectory(id);
       tempDirectory.renameTo(directory);
       return ResponseDto.fileSaveError();
     } catch (Exception exception) {
       exception.printStackTrace();
-      deleteProjectDirectory(id);
+      ResourceUtils.deleteProjectDirectory(id);
       tempDirectory.renameTo(directory);
       return ResponseDto.databaseError();
     }
@@ -213,48 +212,13 @@ public class ProjectServiceImplement implements ProjectService {
 
       projectRepository.delete(projectEntity);
 
-      deleteProjectDirectory(id);
+      ResourceUtils.deleteProjectDirectory(id);
     } catch (Exception exception) {
       exception.printStackTrace();
       return ResponseDto.databaseError();
     }
 
     return DeleteProjectResponseDto.success();
-  }
-
-  private String createThumbnailSavePath(String id, MultipartFile file) {
-    String fileExtension = getFileExtension(file);
-    return System.getProperty("user.dir") + "/resources/project/" + id + "/thumbnail" + fileExtension;
-  }
-
-  private String createResourceSavePath(String id, MultipartFile file) {
-    return System.getProperty("user.dir") + "/resources/project/" + id + "/" + file.getOriginalFilename();
-  }
-
-  private boolean isThumbnailFile(File file) {
-    if (!file.isFile()) return false;
-
-    String resourceFilenameWithoutExtension = file.getName().substring(0, file.getName().lastIndexOf("."));
-    return resourceFilenameWithoutExtension.equals("thumbnail");
-  }
-
-  private String getFileExtension(MultipartFile file) {
-    String originalFilename = file.getOriginalFilename();
-    return originalFilename.substring(originalFilename.lastIndexOf("."));
-  }
-
-  private void saveFile(MultipartFile file, Path savePath) throws IOException {
-    Files.createDirectories(savePath.getParent());
-    file.transferTo(savePath.toFile());
-  }
-
-  private void deleteProjectDirectory(String id) {
-    try {
-      Path path = Paths.get(System.getProperty("user.dir") + "/resources/project/" + id);
-      FileUtils.deleteDirectory(path.toFile());
-    } catch (Exception exception) {
-      exception.printStackTrace();
-    }
   }
 
 }

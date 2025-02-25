@@ -1,15 +1,15 @@
 package com.hyk.hykportfolioback.controller;
 
+import com.hyk.hykportfolioback.dto.request.post.PostPostRequestDto;
 import com.hyk.hykportfolioback.dto.response.post.GetPostContentResponseDto;
 import com.hyk.hykportfolioback.dto.response.post.GetPostListResponseDto;
 import com.hyk.hykportfolioback.dto.response.post.GetPostResponseDto;
+import com.hyk.hykportfolioback.dto.response.post.PostPostResponseDto;
 import com.hyk.hykportfolioback.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/post")
@@ -33,6 +33,12 @@ public class PostController {
   @GetMapping("/{id}/content")
   public ResponseEntity<? super GetPostContentResponseDto> getPostContent(@PathVariable("id") Integer id) {
     ResponseEntity<? super GetPostContentResponseDto> response = postService.getPostContent(id);
+    return response;
+  }
+
+  @PostMapping("")
+  public ResponseEntity<? super PostPostResponseDto> postPost(@ModelAttribute @Valid PostPostRequestDto request) {
+    ResponseEntity<? super PostPostResponseDto> response = postService.postPost(request);
     return response;
   }
 

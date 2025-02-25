@@ -18,4 +18,9 @@ public class TagEntity {
   private String name;
   private String createdAt;
 
+  public TagEntity(String name, String createdAt) {
+    this.name = name;
+    this.createdAt = createdAt;
+  }
+
 }

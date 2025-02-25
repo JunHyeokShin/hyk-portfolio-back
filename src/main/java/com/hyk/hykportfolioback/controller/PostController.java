@@ -1,10 +1,8 @@
 package com.hyk.hykportfolioback.controller;
 
 import com.hyk.hykportfolioback.dto.request.post.PostPostRequestDto;
-import com.hyk.hykportfolioback.dto.response.post.GetPostContentResponseDto;
-import com.hyk.hykportfolioback.dto.response.post.GetPostListResponseDto;
-import com.hyk.hykportfolioback.dto.response.post.GetPostResponseDto;
-import com.hyk.hykportfolioback.dto.response.post.PostPostResponseDto;
+import com.hyk.hykportfolioback.dto.request.post.PutPostRequestDto;
+import com.hyk.hykportfolioback.dto.response.post.*;
 import com.hyk.hykportfolioback.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +37,13 @@ public class PostController {
   @PostMapping("")
   public ResponseEntity<? super PostPostResponseDto> postPost(@ModelAttribute @Valid PostPostRequestDto request) {
     ResponseEntity<? super PostPostResponseDto> response = postService.postPost(request);
+    return response;
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<? super PutPostResponseDto> putPost(@PathVariable("id") Integer id,
+                                                            @ModelAttribute @Valid PutPostRequestDto request) {
+    ResponseEntity<? super PutPostResponseDto> response = postService.updatePost(id, request);
     return response;
   }
 

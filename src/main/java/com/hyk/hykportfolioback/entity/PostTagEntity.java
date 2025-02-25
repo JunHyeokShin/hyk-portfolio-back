@@ -21,5 +21,6 @@ public class PostTagEntity {
   private int postId;
   @Id
   private int tagId;
+  private int idx;
 
 }

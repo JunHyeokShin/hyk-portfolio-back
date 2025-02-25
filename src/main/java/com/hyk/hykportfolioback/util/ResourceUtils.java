@@ -56,6 +56,10 @@ public class ResourceUtils {
   }
 
   public static void deletePostDirectory(Integer id) {
+    deletePostDirectory(id.toString());
+  }
+
+  public static void deletePostDirectory(String id) {
     try {
       Path path = Paths.get(System.getProperty("user.dir") + "/resources/post/" + id);
       FileUtils.deleteDirectory(path.toFile());

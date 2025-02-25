@@ -2,11 +2,9 @@ package com.hyk.hykportfolioback.service.implement;
 
 import com.hyk.hykportfolioback.dto.object.ResourceListItem;
 import com.hyk.hykportfolioback.dto.request.post.PostPostRequestDto;
+import com.hyk.hykportfolioback.dto.request.post.PutPostRequestDto;
 import com.hyk.hykportfolioback.dto.response.ResponseDto;
-import com.hyk.hykportfolioback.dto.response.post.GetPostContentResponseDto;
-import com.hyk.hykportfolioback.dto.response.post.GetPostListResponseDto;
-import com.hyk.hykportfolioback.dto.response.post.GetPostResponseDto;
-import com.hyk.hykportfolioback.dto.response.post.PostPostResponseDto;
+import com.hyk.hykportfolioback.dto.response.post.*;
 import com.hyk.hykportfolioback.entity.PostEntity;
 import com.hyk.hykportfolioback.entity.PostTagEntity;
 import com.hyk.hykportfolioback.entity.PostWithTagsEntity;
@@ -29,9 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -152,6 +148,7 @@ public class PostServiceImplement implements PostService {
       }
 
       if (tags != null) {
+        int idx = 0;
         for (String tag : tags) {
           TagEntity tagEntity = tagRepository.findByName(tag);
           if (tagEntity == null) {
@@ -159,8 +156,9 @@ public class PostServiceImplement implements PostService {
             tagRepository.save(tagEntity);
           }
 
-          PostTagEntity postTagEntity = new PostTagEntity(id, tagEntity.getId());
+          PostTagEntity postTagEntity = new PostTagEntity(id, tagEntity.getId(), idx);
           postTagRepository.save(postTagEntity);
+          idx++;
         }
       }
     } catch (IOException exception) {
@@ -176,6 +174,91 @@ public class PostServiceImplement implements PostService {
     }
 
     return PostPostResponseDto.success();
+  }
+
+  @Override
+  @Transactional
+  public ResponseEntity<? super PutPostResponseDto> updatePost(Integer id, PutPostRequestDto dto) {
+    String thumbnail = null;
+    MultipartFile thumbnailFile = dto.getThumbnailFile();
+    List<MultipartFile> resourceFiles = dto.getResourceFiles();
+    List<String> tags = dto.getTags();
+    File directory = new File(System.getProperty("user.dir") + "/resources/post/" + id);
+    File tempDirectory = new File(System.getProperty("user.dir") + "/resources/post/" + id + "_temp");
+    Optional<PostEntity> optionalPostEntity;
+
+    try {
+      directory.renameTo(tempDirectory);
+
+      optionalPostEntity = postRepository.findById(id);
+      if (optionalPostEntity.isEmpty()) {
+        tempDirectory.renameTo(directory);
+        return PutPostResponseDto.notExistedPost();
+      }
+
+      if (thumbnailFile != null) {
+        if (thumbnailFile.isEmpty()) {
+          tempDirectory.renameTo(directory);
+          return ResponseDto.emptyFile();
+        }
+
+        String savePathString = ResourceUtils.createPostThumbnailSavePath(id, thumbnailFile);
+        Path savePath = Paths.get(savePathString);
+        ResourceUtils.saveFile(thumbnailFile, savePath);
+        thumbnail = domain + "/resource/post/" + id + "/thumbnail" + ResourceUtils.getFileExtension(thumbnailFile);
+      }
+
+      if (resourceFiles != null) {
+        for (MultipartFile resourceFile : resourceFiles) {
+          if (resourceFile.isEmpty()) {
+            ResourceUtils.deletePostDirectory(id);
+            tempDirectory.renameTo(directory);
+            return ResponseDto.emptyFile();
+          }
+
+          String savePathString = ResourceUtils.createPostResourceSavePath(id, resourceFile);
+          Path savePath = Paths.get(savePathString);
+          ResourceUtils.saveFile(resourceFile, savePath);
+        }
+      }
+
+      PostEntity postEntity = optionalPostEntity.get();
+      postEntity.updatePost(dto, thumbnail);
+      postRepository.save(postEntity);
+
+      postTagRepository.deleteAllByPostId(id);
+      if (tags != null) {
+        int idx = 0;
+        for (String tag : tags) {
+          TagEntity tagEntity = tagRepository.findByName(tag);
+          if (tagEntity == null) {
+            tagEntity = new TagEntity(tag, postEntity.getUpdatedAt());
+            tagRepository.save(tagEntity);
+          }
+
+          PostTagEntity postTagEntity = new PostTagEntity(id, tagEntity.getId(), idx);
+          postTagRepository.save(postTagEntity);
+          idx++;
+        }
+      }
+      tagRepository.deleteOrphanTags();
+
+      ResourceUtils.deletePostDirectory(id + "_temp");
+    } catch (IOException exception) {
+      exception.printStackTrace();
+      ResourceUtils.deletePostDirectory(id);
+      tempDirectory.renameTo(directory);
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+      return ResponseDto.fileSaveError();
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      ResourceUtils.deletePostDirectory(id);
+      tempDirectory.renameTo(directory);
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+      return ResponseDto.databaseError();
+    }
+
+    return PutPostResponseDto.success();
   }
 
 }

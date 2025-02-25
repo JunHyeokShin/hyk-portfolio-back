@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostTagRepository extends JpaRepository<PostTagEntity, PostTagPk> {
 
+  void deleteAllByPostId(Integer postId);
+
 }

@@ -60,6 +60,7 @@ CREATE TABLE post_tag
 (
     post_id INT NOT NULL COMMENT '게시물 번호',
     tag_id  INT NOT NULL COMMENT '태그 번호',
+    idx     INT NOT NULL COMMENT '인덱스',
     PRIMARY KEY (post_id, tag_id),
     FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE,
     FOREIGN KEY (tag_id) REFERENCES tag (id) ON DELETE CASCADE
@@ -71,7 +72,8 @@ SELECT p.id,
        p.thumbnail,
        p.theme_color,
        p.content,
-       IF(COUNT(t.name) = 0, JSON_ARRAY(), JSON_ARRAYAGG(t.name)) AS tags,
+       IF(COUNT(t.name) = 0, '[]',
+          CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('"', t.name, '"') ORDER BY pt.idx ASC SEPARATOR ', '), ']')) AS tags,
        p.comment_count,
        p.view_count,
        p.created_at,
@@ -79,12 +81,4 @@ SELECT p.id,
 FROM post AS p
          LEFT JOIN post_tag AS pt ON p.id = pt.post_id
          LEFT JOIN tag AS t ON pt.tag_id = t.id
-GROUP BY p.id,
-         p.title,
-         p.thumbnail,
-         p.theme_color,
-         p.content,
-         p.comment_count,
-         p.view_count,
-         p.created_at,
-         p.updated_at;
+GROUP BY p.id;

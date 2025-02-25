@@ -121,6 +121,7 @@ public class ProjectServiceImplement implements ProjectService {
             ResourceUtils.deleteProjectDirectory(id);
             return ResponseDto.emptyFile();
           }
+
           String savePathString = ResourceUtils.createProjectResourceSavePath(id, resourceFile);
           Path savePath = Paths.get(savePathString);
           ResourceUtils.saveFile(resourceFile, savePath);
@@ -165,6 +166,7 @@ public class ProjectServiceImplement implements ProjectService {
           tempDirectory.renameTo(directory);
           return ResponseDto.emptyFile();
         }
+
         String savePathString = ResourceUtils.createProjectThumbnailSavePath(id, thumbnailFile);
         Path savePath = Paths.get(savePathString);
         ResourceUtils.saveFile(thumbnailFile, savePath);
@@ -175,8 +177,10 @@ public class ProjectServiceImplement implements ProjectService {
         for (MultipartFile resourceFile : resourceFiles) {
           if (resourceFile.isEmpty()) {
             ResourceUtils.deleteProjectDirectory(id);
+            tempDirectory.renameTo(directory);
             return ResponseDto.emptyFile();
           }
+
           String savePathString = ResourceUtils.createProjectResourceSavePath(id, resourceFile);
           Path savePath = Paths.get(savePathString);
           ResourceUtils.saveFile(resourceFile, savePath);

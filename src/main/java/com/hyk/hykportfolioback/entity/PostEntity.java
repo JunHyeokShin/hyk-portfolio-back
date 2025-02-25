@@ -1,6 +1,7 @@
 package com.hyk.hykportfolioback.entity;
 
 import com.hyk.hykportfolioback.dto.request.post.PostPostRequestDto;
+import com.hyk.hykportfolioback.dto.request.post.PutPostRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,6 +46,18 @@ public class PostEntity {
 
   public void increaseViewCount() {
     this.viewCount++;
+  }
+
+  public void updatePost(PutPostRequestDto dto, String thumbnail) {
+    Date now = Date.from(Instant.now());
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String updatedAt = simpleDateFormat.format(now);
+
+    this.title = dto.getTitle();
+    this.thumbnail = thumbnail;
+    this.themeColor = dto.getThemeColor();
+    this.content = dto.getContent();
+    this.updatedAt = updatedAt;
   }
 
 }

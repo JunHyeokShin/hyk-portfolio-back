@@ -47,4 +47,10 @@ public class PostController {
     return response;
   }
 
+  @DeleteMapping("/{id}")
+  public ResponseEntity<? super DeletePostResponseDto> deletePost(@PathVariable("id") Integer id) {
+    ResponseEntity<? super DeletePostResponseDto> response = postService.deletePost(id);
+    return response;
+  }
+
 }

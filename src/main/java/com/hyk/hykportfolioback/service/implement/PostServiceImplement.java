@@ -27,7 +27,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -259,6 +261,27 @@ public class PostServiceImplement implements PostService {
     }
 
     return PutPostResponseDto.success();
+  }
+
+  @Override
+  @Transactional
+  public ResponseEntity<? super DeletePostResponseDto> deletePost(Integer id) {
+    try {
+      Optional<PostEntity> optionalPostEntity = postRepository.findById(id);
+      if (optionalPostEntity.isEmpty()) return DeletePostResponseDto.notExistedPost();
+      PostEntity postEntity = optionalPostEntity.get();
+
+      postRepository.delete(postEntity);
+      tagRepository.deleteOrphanTags();
+
+      ResourceUtils.deletePostDirectory(id);
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+      return ResponseDto.databaseError();
+    }
+
+    return DeletePostResponseDto.success();
   }
 
 }

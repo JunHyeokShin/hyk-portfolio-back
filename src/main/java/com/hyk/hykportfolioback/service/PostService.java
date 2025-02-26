@@ -17,4 +17,6 @@ public interface PostService {
 
   ResponseEntity<? super PutPostResponseDto> updatePost(Integer id, PutPostRequestDto dto);
 
+  ResponseEntity<? super DeletePostResponseDto> deletePost(Integer id);
+
 }

@@ -111,6 +111,20 @@ public class PostServiceImplement implements PostService {
   }
 
   @Override
+  public ResponseEntity<? super GetNextIdResponseDto> getNextId() {
+    Integer id = null;
+
+    try {
+      id = postRepository.getNextAutoIncrementValue();
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      return ResponseDto.databaseError();
+    }
+
+    return GetNextIdResponseDto.success(id);
+  }
+
+  @Override
   @Transactional
   public ResponseEntity<? super PostPostResponseDto> postPost(PostPostRequestDto dto) {
     Integer id = null;
@@ -175,7 +189,7 @@ public class PostServiceImplement implements PostService {
       return ResponseDto.databaseError();
     }
 
-    return PostPostResponseDto.success();
+    return PostPostResponseDto.success(id);
   }
 
   @Override

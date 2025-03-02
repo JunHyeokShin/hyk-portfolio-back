@@ -34,6 +34,12 @@ public class PostController {
     return response;
   }
 
+  @GetMapping("/next-id")
+  public ResponseEntity<? super GetNextIdResponseDto> getNextId() {
+    ResponseEntity<? super GetNextIdResponseDto> response = postService.getNextId();
+    return response;
+  }
+
   @PostMapping("")
   public ResponseEntity<? super PostPostResponseDto> postPost(@ModelAttribute @Valid PostPostRequestDto request) {
     ResponseEntity<? super PostPostResponseDto> response = postService.postPost(request);

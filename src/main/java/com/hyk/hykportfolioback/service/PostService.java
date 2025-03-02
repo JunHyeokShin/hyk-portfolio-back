@@ -13,6 +13,8 @@ public interface PostService {
 
   ResponseEntity<? super GetPostContentResponseDto> getPostContent(Integer id);
 
+  ResponseEntity<? super GetNextIdResponseDto> getNextId();
+
   ResponseEntity<? super PostPostResponseDto> postPost(PostPostRequestDto dto);
 
   ResponseEntity<? super PutPostResponseDto> updatePost(Integer id, PutPostRequestDto dto);

@@ -227,7 +227,7 @@ public class PostServiceImplement implements PostService {
         String savePathString = ResourceUtils.createPostThumbnailSavePath(id, thumbnailFile);
         Path savePath = Paths.get(savePathString);
         ResourceUtils.saveFile(thumbnailFile, savePath);
-        thumbnail = domain + "/resource/post/" + id + "/thumbnail" + ResourceUtils.getFileExtension(thumbnailFile);
+        thumbnail = domain + "/resources/post/" + id + "/thumbnail" + ResourceUtils.getFileExtension(thumbnailFile);
       }
 
       if (resourceFiles != null) {

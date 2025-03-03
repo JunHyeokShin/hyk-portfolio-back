@@ -15,6 +15,8 @@ import com.hyk.hykportfolioback.repository.PostWithTagsRepository;
 import com.hyk.hykportfolioback.repository.TagRepository;
 import com.hyk.hykportfolioback.service.PostService;
 import com.hyk.hykportfolioback.util.ResourceUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,9 @@ public class PostServiceImplement implements PostService {
 
   @Value("${domain}")
   private String domain;
+
+  @PersistenceContext
+  private EntityManager entityManager;
 
   private final PostRepository postRepository;
   private final TagRepository tagRepository;
@@ -115,6 +120,7 @@ public class PostServiceImplement implements PostService {
     Integer id = null;
 
     try {
+      entityManager.createNativeQuery("ANALYZE TABLE post").getResultList();
       id = postRepository.getNextAutoIncrementValue();
     } catch (Exception exception) {
       exception.printStackTrace();

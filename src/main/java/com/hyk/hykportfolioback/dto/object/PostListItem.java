@@ -17,12 +17,14 @@ public class PostListItem {
   private String thumbnail;
   private String themeColor;
   private List<String> tags;
+  private String createdAt;
 
   public PostListItem(PostWithTagsEntity postWithTagsEntity) {
     this.id = postWithTagsEntity.getId();
     this.title = postWithTagsEntity.getTitle();
     this.thumbnail = postWithTagsEntity.getThumbnail();
     this.themeColor = postWithTagsEntity.getThemeColor();
+    this.createdAt = postWithTagsEntity.getCreatedAt();
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       this.tags = objectMapper.readValue(postWithTagsEntity.getTags(), new TypeReference<List<String>>() {

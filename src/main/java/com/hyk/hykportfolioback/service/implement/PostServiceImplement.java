@@ -131,6 +131,21 @@ public class PostServiceImplement implements PostService {
   }
 
   @Override
+  public ResponseEntity<? super GetSearchPostListResponseDto> getSearchPostList(String searchWord) {
+    List<PostWithTagsEntity> postWithTagsEntities = new ArrayList<>();
+
+    try {
+      postWithTagsEntities =
+          postWithTagsRepository.findAllByTitleContainsIgnoreCaseOrContentContainsIgnoreCaseOrTagsContainsIgnoreCaseOrderByCreatedAtDesc(searchWord, searchWord, searchWord);
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      return ResponseDto.databaseError();
+    }
+
+    return GetSearchPostListResponseDto.success(postWithTagsEntities);
+  }
+
+  @Override
   @Transactional
   public ResponseEntity<? super PostPostResponseDto> postPost(PostPostRequestDto dto) {
     Integer id = null;

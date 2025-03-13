@@ -11,4 +11,6 @@ public interface PostWithTagsRepository extends JpaRepository<PostWithTagsEntity
 
   List<PostWithTagsEntity> findAllByOrderByCreatedAtDesc();
 
+  List<PostWithTagsEntity> findAllByTitleContainsIgnoreCaseOrContentContainsIgnoreCaseOrTagsContainsIgnoreCaseOrderByCreatedAtDesc(String title, String content, String tags);
+
 }

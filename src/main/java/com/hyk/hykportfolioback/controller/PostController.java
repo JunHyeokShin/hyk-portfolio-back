@@ -40,6 +40,12 @@ public class PostController {
     return response;
   }
 
+  @GetMapping("/search/{searchWord}")
+  public ResponseEntity<? super GetSearchPostListResponseDto> getSearchPostList(@PathVariable("searchWord") String searchWord) {
+    ResponseEntity<? super GetSearchPostListResponseDto> response = postService.getSearchPostList(searchWord);
+    return response;
+  }
+
   @PostMapping("")
   public ResponseEntity<? super PostPostResponseDto> postPost(@ModelAttribute @Valid PostPostRequestDto request) {
     ResponseEntity<? super PostPostResponseDto> response = postService.postPost(request);

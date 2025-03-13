@@ -15,6 +15,8 @@ public interface PostService {
 
   ResponseEntity<? super GetNextIdResponseDto> getNextId();
 
+  ResponseEntity<? super GetSearchPostListResponseDto> getSearchPostList(String searchWord);
+
   ResponseEntity<? super PostPostResponseDto> postPost(PostPostRequestDto dto);
 
   ResponseEntity<? super PutPostResponseDto> updatePost(Integer id, PutPostRequestDto dto);

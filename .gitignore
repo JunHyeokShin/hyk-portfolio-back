@@ -5,6 +5,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+application-dev.yaml
+.env*
+db/data/
+
 ### STS ###
 .apt_generated
 .classpath

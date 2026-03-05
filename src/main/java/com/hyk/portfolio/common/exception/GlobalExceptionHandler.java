@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.hyk.portfolio.resource.application.exception.OrphanFileException;
 import com.hyk.portfolio.resource.application.exception.StorageException;
 
 @RestControllerAdvice
@@ -34,7 +35,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     );
     problemDetail.setType(typeUri);
     problemDetail.setTitle(errorCode.name());
-
     return problemDetail;
   }
 
@@ -50,7 +50,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     );
     problemDetail.setType(typeUri);
     problemDetail.setTitle("INTERNAL_SERVER_ERROR");
+    return problemDetail;
+  }
 
+  @ExceptionHandler(OrphanFileException.class)
+  public ProblemDetail handleOrphanFileException(OrphanFileException e) {
+    URI typeUri = UriComponentsBuilder.fromUriString(this.errorDocBaseUri)
+        .pathSegment("INTERNAL_SERVER_ERROR")
+        .build().toUri();
+
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        e.getMessage()
+    );
+    problemDetail.setType(typeUri);
+    problemDetail.setTitle("INTERNAL_SERVER_ERROR");
     return problemDetail;
   }
 

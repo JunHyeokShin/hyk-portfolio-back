@@ -1,5 +1,6 @@
 package com.hyk.portfolio.common.exception;
 
+import java.io.IOException;
 import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.hyk.portfolio.resource.exception.OrphanFileException;
+import com.hyk.portfolio.resource.exception.StorageException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -23,6 +27,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   public ProblemDetail handleBusinessException(BusinessException e) {
     ErrorCode errorCode = e.getErrorCode();
     return createProblemDetail(errorCode.getStatus(), errorCode.name(), e.getMessage());
+  }
+
+  @ExceptionHandler({OrphanFileException.class, StorageException.class})
+  public ProblemDetail handleException(Exception e) {
+    return createProblemDetail(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "INTERNAL_SERVER_ERROR",
+        e.getMessage()
+    );
+  }
+
+  @ExceptionHandler(IOException.class)
+  public ProblemDetail handleIOException(IOException e) {
+    return createProblemDetail(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "INTERNAL_SERVER_ERROR",
+        "An internal server error occurred."
+    );
   }
 
   private ProblemDetail createProblemDetail(HttpStatus status, String title, String detail) {

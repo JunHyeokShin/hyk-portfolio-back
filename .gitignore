@@ -2,6 +2,7 @@ application-dev.yaml
 .env*
 db/data/
 /resources/
+/logs/
 
 HELP.md
 .gradle

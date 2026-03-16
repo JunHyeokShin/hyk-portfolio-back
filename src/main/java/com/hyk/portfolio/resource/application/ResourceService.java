@@ -1,6 +1,9 @@
 package com.hyk.portfolio.resource.application;
 
 import java.io.InputStream;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hyk.portfolio.resource.domain.Resource;
 import com.hyk.portfolio.resource.domain.ResourceRepository;
+import com.hyk.portfolio.resource.domain.ResourceStatus;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -46,6 +50,27 @@ public class ResourceService {
       throw e;
     }
     return new ResourceUploadResult(id, originalFilename, savedFilename, url);
+  }
+
+  public void cleanupOrphanedResources() {
+    Instant threshold = Instant.now().minus(24, ChronoUnit.HOURS);
+    List<Resource> orphanedResources = this.resourceRepository
+        .findByStatusAndCreatedAtBefore(ResourceStatus.PENDING, threshold);
+    int deletedCount = 0;
+    for (Resource resource : orphanedResources) {
+      try {
+        this.fileStorage.delete(resource.getSavedFilename());
+        this.resourceRepository.delete(resource);
+        deletedCount++;
+        log.debug("Successfully deleted orphaned resource: {}", resource.getSavedFilename());
+      }
+      catch (Exception e) {
+        log.error("Failed to delete orphaned resource: {}", resource.getSavedFilename(), e);
+      }
+    }
+    if (deletedCount > 0) {
+      log.info("Cleaned up {} orphaned resources.", deletedCount);
+    }
   }
 
   private String getExtension(String filename) {

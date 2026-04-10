@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: hyk-portfolio
+  profiles:
+    active:
+      - dev

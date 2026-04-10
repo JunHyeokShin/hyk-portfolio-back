@@ -1,6 +1,9 @@
 package com.hyk.portfolio.resource.application;
 
 import java.io.InputStream;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
@@ -11,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hyk.portfolio.resource.application.dto.ResourceDetail;
 import com.hyk.portfolio.resource.domain.Resource;
 import com.hyk.portfolio.resource.domain.ResourceRepository;
+import com.hyk.portfolio.resource.domain.ResourceStatus;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,6 +45,21 @@ public class ResourceService {
       }
       throw e;
     }
+  }
+
+  public void deleteExpiredResources() {
+    Instant threshold = Instant.now().minus(24, ChronoUnit.HOURS);
+    List<Resource> expiredResources = this.resourceRepository.findByStatusAndCreatedAtBefore(
+        ResourceStatus.PENDING, threshold);
+    expiredResources.forEach(resource -> {
+      try {
+        this.fileStorage.delete(resource.getSavedFilename());
+        this.resourceRepository.delete(resource);
+      }
+      catch (Exception e) {
+        log.error("Failed to delete expired resource: {}", resource.getSavedFilename(), e);
+      }
+    });
   }
 
   private String getExtension(String filename) {

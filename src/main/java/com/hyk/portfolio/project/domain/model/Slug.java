@@ -11,7 +11,7 @@ public record Slug(String value) {
   private static final Pattern PATTERN = Pattern.compile(REGEX);
 
   public Slug {
-    if (value == null || value.isEmpty()) {
+    if (value == null || value.isBlank()) {
       throw new IllegalArgumentException("value는 필수입니다");
     }
     value = value.trim().toLowerCase(Locale.ROOT);

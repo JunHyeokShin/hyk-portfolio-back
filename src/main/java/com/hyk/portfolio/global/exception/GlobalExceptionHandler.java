@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 import com.hyk.portfolio.common.exception.BusinessException;
+import com.hyk.portfolio.common.exception.CommonErrorCode;
 import com.hyk.portfolio.common.exception.ErrorCode;
 
 @Slf4j
@@ -19,11 +21,14 @@ class GlobalExceptionHandler {
     if (errorCode.getHttpStatus().is5xxServerError()) {
       log.error("서버 오류 응답: {}", errorCode.getCode(), e);
     }
-    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-        errorCode.getHttpStatus(), e.getMessage());
-    problemDetail.setTitle(errorCode.getCode());
+    ProblemDetail problemDetail = ProblemDetails.from(errorCode, e.getMessage());
     e.getExtensions().forEach(problemDetail::setProperty);
     return problemDetail;
+  }
+
+  @ExceptionHandler(MultipartException.class)
+  ProblemDetail handleMultipartException(MultipartException e) {
+    return ProblemDetails.from(CommonErrorCode.INVALID_REQUEST);
   }
 
   @ExceptionHandler(Exception.class)

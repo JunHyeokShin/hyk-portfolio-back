@@ -16,6 +16,9 @@ class GlobalExceptionHandler {
   @ExceptionHandler(BusinessException.class)
   ProblemDetail handleBusinessException(BusinessException e) {
     ErrorCode errorCode = e.getErrorCode();
+    if (errorCode.getHttpStatus().is5xxServerError()) {
+      log.error("서버 오류 응답: {}", errorCode.getCode(), e);
+    }
     ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
         errorCode.getHttpStatus(), e.getMessage());
     problemDetail.setTitle(errorCode.getCode());

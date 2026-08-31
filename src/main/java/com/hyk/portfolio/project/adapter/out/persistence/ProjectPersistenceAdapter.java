@@ -1,5 +1,7 @@
 package com.hyk.portfolio.project.adapter.out.persistence;
 
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -41,6 +43,12 @@ class ProjectPersistenceAdapter implements SaveProjectPort, LoadProjectPort {
     catch (DataIntegrityViolationException e) {
       throw new BusinessException(ProjectErrorCode.SLUG_DUPLICATED, e);
     }
+  }
+
+  @Override
+  public Optional<Project> findBySlug(Slug slug) {
+    return this.jpaRepository.findBySlug(slug.value())
+        .map(ProjectMapper::toDomain);
   }
 
   @Override

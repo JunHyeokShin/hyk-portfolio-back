@@ -10,6 +10,7 @@ import com.hyk.portfolio.common.exception.ErrorCode;
 @RequiredArgsConstructor
 public enum ProjectErrorCode implements ErrorCode {
 
+  PROJECT_NOT_FOUND("프로젝트를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
   SLUG_DUPLICATED("이미 사용 중인 slug입니다", HttpStatus.CONFLICT);
 
   private final String message;

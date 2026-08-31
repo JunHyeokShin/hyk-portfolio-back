@@ -41,9 +41,11 @@ record WriteProjectRequest(
 ) {
 
   WriteProjectRequest {
-    thumbnail = thumbnail != null && thumbnail.isBlank() ? null : thumbnail;
-    themeColor = themeColor != null && themeColor.isBlank() ? null : themeColor;
-    description = description != null && description.isBlank() ? null : description;
+    slug = slug != null && !slug.isBlank() ? slug.trim() : null;
+    title = title != null && !title.isBlank() ? title.trim() : null;
+    thumbnail = thumbnail != null && !thumbnail.isBlank() ? thumbnail.trim() : null;
+    themeColor = themeColor != null && !themeColor.isBlank() ? themeColor.trim() : null;
+    description = description != null && !description.isBlank() ? description.trim() : null;
   }
 
   WriteProjectCommand toCommand() {

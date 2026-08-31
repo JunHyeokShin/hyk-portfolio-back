@@ -21,6 +21,12 @@ class UploadResourceService implements UploadResourceUseCase {
   private final StoreFilePort storeFilePort;
   private final SaveResourcePort saveResourcePort;
 
+  private static String generateFilename(String originalFilename) {
+    int dotIndex = originalFilename.lastIndexOf('.');
+    String extension = dotIndex >= 0 ? originalFilename.substring(dotIndex) : "";
+    return UUID.randomUUID() + extension;
+  }
+
   @Override
   public UploadResourceResult upload(UploadResourceCommand command) {
     String filename = generateFilename(command.originalFilename());
@@ -28,12 +34,6 @@ class UploadResourceService implements UploadResourceUseCase {
     Resource resource = Resource.upload(filename, url);
     Resource saved = this.saveResourcePort.save(resource);
     return UploadResourceResult.from(saved);
-  }
-
-  private String generateFilename(String originalFilename) {
-    int dotIndex = originalFilename.lastIndexOf('.');
-    String extension = dotIndex >= 0 ? originalFilename.substring(dotIndex) : "";
-    return UUID.randomUUID() + extension;
   }
 
 }

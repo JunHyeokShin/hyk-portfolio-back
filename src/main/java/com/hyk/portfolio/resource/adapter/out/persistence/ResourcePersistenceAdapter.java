@@ -23,7 +23,7 @@ class ResourcePersistenceAdapter implements SaveResourcePort {
     }
     ResourceJpaEntity entity = this.jpaRepository.findById(resource.getId())
         .orElseThrow(() -> new IllegalStateException(
-            "저장하려는 리소스가 존재하지 않습니다. id: " + resource.getId()));
+            "저장하려는 리소스가 존재하지 않습니다: " + resource.getId()));
     ResourceMapper.updateEntity(entity, resource);
     return ResourceMapper.toDomain(entity);
   }

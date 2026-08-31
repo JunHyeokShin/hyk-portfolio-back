@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 import com.hyk.portfolio.resource.domain.model.Resource;
 import com.hyk.portfolio.resource.domain.model.Target;
-import com.hyk.portfolio.resource.domain.model.TargetType;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class ResourceMapper {
@@ -16,8 +15,8 @@ final class ResourceMapper {
         .id(resource.getId())
         .filename(resource.getFilename())
         .url(resource.getUrl())
-        .targetType(targetTypeOf(target))
-        .targetId(targetIdOf(target))
+        .targetType(target != null ? target.type() : null)
+        .targetId(target != null ? target.id() : null)
         .status(resource.getStatus())
         .uploadedAt(resource.getUploadedAt())
         .build();
@@ -28,7 +27,9 @@ final class ResourceMapper {
         entity.getId(),
         entity.getFilename(),
         entity.getUrl(),
-        targetOf(entity.getTargetType(), entity.getTargetId()),
+        entity.getTargetType() != null
+            ? Target.of(entity.getTargetType(), entity.getTargetId())
+            : null,
         entity.getStatus(),
         entity.getUploadedAt()
     );
@@ -36,19 +37,11 @@ final class ResourceMapper {
 
   static void updateEntity(ResourceJpaEntity entity, Resource resource) {
     Target target = resource.getTarget();
-    entity.update(targetTypeOf(target), targetIdOf(target), resource.getStatus());
-  }
-
-  private static TargetType targetTypeOf(Target target) {
-    return target != null ? target.type() : null;
-  }
-
-  private static Long targetIdOf(Target target) {
-    return target != null ? target.id() : null;
-  }
-
-  private static Target targetOf(TargetType type, Long id) {
-    return type != null ? Target.of(type, id) : null;
+    entity.update(
+        target != null ? target.type() : null,
+        target != null ? target.id() : null,
+        resource.getStatus()
+    );
   }
 
 }

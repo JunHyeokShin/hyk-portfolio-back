@@ -3,6 +3,7 @@ package com.hyk.portfolio.project.adapter.out.persistence;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import com.hyk.portfolio.project.application.port.in.ProjectSummary;
 import com.hyk.portfolio.project.domain.model.Content;
 import com.hyk.portfolio.project.domain.model.Description;
 import com.hyk.portfolio.project.domain.model.Project;
@@ -39,6 +40,18 @@ final class ProjectMapper {
         Content.of(entity.getContent()),
         entity.getCreatedAt(),
         entity.getUpdatedAt()
+    );
+  }
+
+  static ProjectSummary toSummary(ProjectSummaryView view) {
+    return new ProjectSummary(
+        Slug.of(view.slug()),
+        Title.of(view.title()),
+        view.thumbnail() != null ? Thumbnail.of(view.thumbnail()) : null,
+        view.themeColor() != null ? ThemeColor.of(view.themeColor()) : null,
+        view.description() != null ? Description.of(view.description()) : null,
+        view.createdAt(),
+        view.updatedAt()
     );
   }
 

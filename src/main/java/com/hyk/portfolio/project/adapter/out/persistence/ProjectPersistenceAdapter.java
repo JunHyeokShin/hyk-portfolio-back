@@ -4,11 +4,14 @@ import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hyk.portfolio.common.exception.BusinessException;
+import com.hyk.portfolio.project.application.port.in.ProjectSummary;
 import com.hyk.portfolio.project.application.port.out.LoadProjectPort;
 import com.hyk.portfolio.project.application.port.out.SaveProjectPort;
 import com.hyk.portfolio.project.domain.exception.ProjectErrorCode;
@@ -49,6 +52,15 @@ class ProjectPersistenceAdapter implements SaveProjectPort, LoadProjectPort {
   public Optional<Project> findBySlug(Slug slug) {
     return this.jpaRepository.findBySlug(slug.value())
         .map(ProjectMapper::toDomain);
+  }
+
+  @Override
+  public Page<ProjectSummary> findAll(String keyword, Pageable pageable) {
+    Page<ProjectSummaryView> views = keyword != null
+        ? this.jpaRepository
+            .findAllByTitleContainingOrDescriptionContaining(keyword, keyword, pageable)
+        : this.jpaRepository.findAllBy(pageable);
+    return views.map(ProjectMapper::toSummary);
   }
 
   @Override

@@ -1,6 +1,19 @@
 spring:
   application:
     name: hyk-portfolio
-  profiles:
-    active:
-      - dev
+  data:
+    web:
+      pageable:
+        serialization-mode: via_dto
+  mvc:
+    problemdetails:
+      enabled: true
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  modulith:
+    events:
+      jdbc:
+        schema-initialization:
+          enabled: true

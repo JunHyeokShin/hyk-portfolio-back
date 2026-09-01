@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  servlet:
+    multipart:
+      max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE}
+      max-request-size: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE}
+
+logging:
+  file:
+    name: ${LOGGING_FILE_NAME}
+
+resource:
+  storage:
+    mode: ${RESOURCE_STORAGE_MODE}
+    local:
+      root-dir: ${RESOURCE_STORAGE_LOCAL_ROOT_DIR}
+      base-uri: ${RESOURCE_STORAGE_LOCAL_BASE_URI}

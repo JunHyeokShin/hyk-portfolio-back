@@ -1,0 +1,53 @@
+services:
+  hyk-portfolio-back:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    image: junhyeokshin/hyk-portfolio-back
+    container_name: hyk-portfolio-back
+    ports:
+      - "${SERVER_PORT}:8080"
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE}
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE}
+      LOGGING_FILE_NAME: ${LOGGING_FILE_NAME}
+      RESOURCE_STORAGE_MODE: ${RESOURCE_STORAGE_MODE}
+      RESOURCE_STORAGE_LOCAL_ROOT_DIR: ${RESOURCE_STORAGE_LOCAL_ROOT_DIR}
+      RESOURCE_STORAGE_LOCAL_BASE_URI: ${RESOURCE_STORAGE_LOCAL_BASE_URI}
+    depends_on:
+      hyk-portfolio-db:
+        condition: service_healthy
+    networks:
+      - hyk-portfolio-network
+
+  hyk-portfolio-db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    image: junhyeokshin/hyk-portfolio-db
+    container_name: hyk-portfolio-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./db/data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${SPRING_DATASOURCE_USERNAME}",
+              "-p${SPRING_DATASOURCE_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - hyk-portfolio-network
+
+networks:
+  hyk-portfolio-network:

@@ -1,6 +1,8 @@
 package com.hyk.portfolio.project.domain.model;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.Getter;
 
@@ -87,6 +89,15 @@ public class Project {
     this.content = content;
     this.updatedAt = Instant.now();
     validate();
+  }
+
+  public Set<String> referencedUrls() {
+    Set<String> urls = new HashSet<>();
+    if (this.thumbnail != null) {
+      urls.add(this.thumbnail.url());
+    }
+    urls.addAll(this.content.referencedUrls());
+    return Set.copyOf(urls);
   }
 
   private void validate() {

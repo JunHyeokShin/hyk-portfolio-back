@@ -8,7 +8,9 @@ import com.hyk.portfolio.common.exception.BusinessException;
 import com.hyk.portfolio.project.application.port.in.WriteProjectCommand;
 import com.hyk.portfolio.project.application.port.in.WriteProjectUseCase;
 import com.hyk.portfolio.project.application.port.out.LoadProjectPort;
+import com.hyk.portfolio.project.application.port.out.PublishProjectEventPort;
 import com.hyk.portfolio.project.application.port.out.SaveProjectPort;
+import com.hyk.portfolio.project.domain.event.ProjectWritten;
 import com.hyk.portfolio.project.domain.exception.ProjectErrorCode;
 import com.hyk.portfolio.project.domain.model.Project;
 import com.hyk.portfolio.project.domain.model.Slug;
@@ -20,6 +22,7 @@ class WriteProjectService implements WriteProjectUseCase {
 
   private final SaveProjectPort saveProjectPort;
   private final LoadProjectPort loadProjectPort;
+  private final PublishProjectEventPort publishProjectEventPort;
 
   @Override
   public Slug write(WriteProjectCommand command) {
@@ -35,7 +38,8 @@ class WriteProjectService implements WriteProjectUseCase {
         command.content()
     );
     Project saved = this.saveProjectPort.save(project);
-    // TODO: 이벤트 발행
+    this.publishProjectEventPort.publish(
+        new ProjectWritten(saved.getId(), saved.referencedUrls()));
     return saved.getSlug();
   }
 

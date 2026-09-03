@@ -60,7 +60,8 @@ public class Resource {
       if (this.target.equals(target)) {
         return;
       }
-      throw new BusinessException(ResourceErrorCode.RESOURCE_TARGET_CONFLICT);
+      throw new BusinessException(
+          ResourceErrorCode.RESOURCE_TARGET_CONFLICT, "이미 다른 게시글에 연결된 리소스입니다: " + this.url);
     }
     this.target = target;
     this.status = ResourceStatus.ATTACHED;

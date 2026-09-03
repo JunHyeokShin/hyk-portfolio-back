@@ -1,16 +1,20 @@
 package com.hyk.portfolio.resource.adapter.out.persistence;
 
+import java.util.Collection;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hyk.portfolio.resource.application.port.out.LoadResourcePort;
 import com.hyk.portfolio.resource.application.port.out.SaveResourcePort;
 import com.hyk.portfolio.resource.domain.model.Resource;
 
 @RequiredArgsConstructor
 @Component
-class ResourcePersistenceAdapter implements SaveResourcePort {
+class ResourcePersistenceAdapter implements SaveResourcePort, LoadResourcePort {
 
   private final ResourceJpaRepository jpaRepository;
 
@@ -27,6 +31,13 @@ class ResourcePersistenceAdapter implements SaveResourcePort {
             "저장하려는 리소스가 존재하지 않습니다: " + resource.getId()));
     ResourceMapper.updateEntity(entity, resource);
     return ResourceMapper.toDomain(entity);
+  }
+
+  @Override
+  public List<Resource> findAllByUrlIn(Collection<String> urls) {
+    return this.jpaRepository.findAllByUrlIn(urls).stream()
+        .map(ResourceMapper::toDomain)
+        .toList();
   }
 
 }

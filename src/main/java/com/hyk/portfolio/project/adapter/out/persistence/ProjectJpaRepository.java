@@ -17,4 +17,6 @@ interface ProjectJpaRepository extends JpaRepository<ProjectJpaEntity, Long> {
 
   boolean existsBySlug(String slug);
 
+  boolean existsBySlugAndIdNot(String slug, Long id);
+
 }

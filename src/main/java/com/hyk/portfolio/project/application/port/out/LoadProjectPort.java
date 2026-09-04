@@ -17,4 +17,6 @@ public interface LoadProjectPort {
 
   boolean existsBySlug(Slug slug);
 
+  boolean existsBySlugAndIdNot(Slug slug, Long id);
+
 }

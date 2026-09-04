@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import com.hyk.portfolio.project.application.port.out.PublishProjectEventPort;
+import com.hyk.portfolio.project.domain.event.ProjectUpdated;
 import com.hyk.portfolio.project.domain.event.ProjectWritten;
 
 @RequiredArgsConstructor
@@ -15,6 +16,11 @@ class SpringProjectEventPublisher implements PublishProjectEventPort {
 
   @Override
   public void publish(ProjectWritten event) {
+    this.delegate.publishEvent(event);
+  }
+
+  @Override
+  public void publish(ProjectUpdated event) {
     this.delegate.publishEvent(event);
   }
 

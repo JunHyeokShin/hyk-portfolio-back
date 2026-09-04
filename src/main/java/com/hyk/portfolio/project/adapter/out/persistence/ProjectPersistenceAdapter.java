@@ -68,4 +68,9 @@ class ProjectPersistenceAdapter implements SaveProjectPort, LoadProjectPort {
     return this.jpaRepository.existsBySlug(slug.value());
   }
 
+  @Override
+  public boolean existsBySlugAndIdNot(Slug slug, Long id) {
+    return this.jpaRepository.existsBySlugAndIdNot(slug.value(), id);
+  }
+
 }

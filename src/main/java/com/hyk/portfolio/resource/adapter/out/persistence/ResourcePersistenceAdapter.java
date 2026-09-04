@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hyk.portfolio.resource.application.port.out.LoadResourcePort;
 import com.hyk.portfolio.resource.application.port.out.SaveResourcePort;
 import com.hyk.portfolio.resource.domain.model.Resource;
+import com.hyk.portfolio.resource.domain.model.Target;
 
 @RequiredArgsConstructor
 @Component
@@ -36,6 +37,14 @@ class ResourcePersistenceAdapter implements SaveResourcePort, LoadResourcePort {
   @Override
   public List<Resource> findAllByUrlIn(Collection<String> urls) {
     return this.jpaRepository.findAllByUrlIn(urls).stream()
+        .map(ResourceMapper::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<Resource> findAllByTarget(Target target) {
+    return this.jpaRepository.findAllByTargetTypeAndTargetId(target.type(), target.id())
+        .stream()
         .map(ResourceMapper::toDomain)
         .toList();
   }

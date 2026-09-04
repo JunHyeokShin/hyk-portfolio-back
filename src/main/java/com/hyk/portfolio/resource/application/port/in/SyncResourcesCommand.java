@@ -4,9 +4,9 @@ import java.util.Set;
 
 import com.hyk.portfolio.resource.domain.model.Target;
 
-public record AttachResourcesCommand(Target target, Set<String> urls) {
+public record SyncResourcesCommand(Target target, Set<String> urls) {
 
-  public AttachResourcesCommand {
+  public SyncResourcesCommand {
     if (target == null) {
       throw new IllegalArgumentException("target은 필수입니다");
     }

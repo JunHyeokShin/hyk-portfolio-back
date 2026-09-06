@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hyk.portfolio.common.exception.BusinessException;
 import com.hyk.portfolio.project.application.port.in.ProjectSummary;
+import com.hyk.portfolio.project.application.port.out.DeleteProjectPort;
 import com.hyk.portfolio.project.application.port.out.LoadProjectPort;
 import com.hyk.portfolio.project.application.port.out.SaveProjectPort;
 import com.hyk.portfolio.project.domain.exception.ProjectErrorCode;
@@ -20,7 +21,7 @@ import com.hyk.portfolio.project.domain.model.Slug;
 
 @RequiredArgsConstructor
 @Component
-class ProjectPersistenceAdapter implements SaveProjectPort, LoadProjectPort {
+class ProjectPersistenceAdapter implements SaveProjectPort, LoadProjectPort, DeleteProjectPort {
 
   private final ProjectJpaRepository jpaRepository;
 
@@ -57,8 +58,7 @@ class ProjectPersistenceAdapter implements SaveProjectPort, LoadProjectPort {
   @Override
   public Page<ProjectSummary> findAll(String keyword, Pageable pageable) {
     Page<ProjectSummaryView> views = keyword != null
-        ? this.jpaRepository
-            .findAllByTitleContainingOrDescriptionContaining(keyword, keyword, pageable)
+        ? this.jpaRepository.findAllByTitleContainingOrDescriptionContaining(keyword, keyword, pageable)
         : this.jpaRepository.findAllBy(pageable);
     return views.map(ProjectMapper::toSummary);
   }
@@ -71,6 +71,12 @@ class ProjectPersistenceAdapter implements SaveProjectPort, LoadProjectPort {
   @Override
   public boolean existsBySlugAndIdNot(Slug slug, Long id) {
     return this.jpaRepository.existsBySlugAndIdNot(slug.value(), id);
+  }
+
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void delete(Project project) {
+    this.jpaRepository.deleteById(project.getId());
   }
 
 }

@@ -11,13 +11,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.hyk.portfolio.resource.application.port.out.DeleteFilePort;
 import com.hyk.portfolio.resource.application.port.out.StorageException;
 import com.hyk.portfolio.resource.application.port.out.StoreFilePort;
 
 @ConditionalOnProperty(name = "resource.storage.mode", havingValue = "local")
 @EnableConfigurationProperties(LocalStorageProperties.class)
 @Component
-class LocalStorageAdapter implements StoreFilePort {
+class LocalStorageAdapter implements StoreFilePort, DeleteFilePort {
 
   private final Path rootDir;
   private final String baseUri;
@@ -43,6 +44,16 @@ class LocalStorageAdapter implements StoreFilePort {
     }
     return UriComponentsBuilder.fromUriString(this.baseUri)
         .pathSegment(filename).toUriString();
+  }
+
+  @Override
+  public void delete(String filename) {
+    try {
+      Files.deleteIfExists(getDestination(filename));
+    }
+    catch (IOException e) {
+      throw new StorageException("파일 삭제에 실패했습니다: " + filename, e);
+    }
   }
 
   private Path getDestination(String filename) {

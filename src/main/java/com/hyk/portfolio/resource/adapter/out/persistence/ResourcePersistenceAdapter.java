@@ -1,5 +1,6 @@
 package com.hyk.portfolio.resource.adapter.out.persistence;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -8,14 +9,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hyk.portfolio.resource.application.port.out.DeleteResourcePort;
 import com.hyk.portfolio.resource.application.port.out.LoadResourcePort;
 import com.hyk.portfolio.resource.application.port.out.SaveResourcePort;
 import com.hyk.portfolio.resource.domain.model.Resource;
+import com.hyk.portfolio.resource.domain.model.ResourceStatus;
 import com.hyk.portfolio.resource.domain.model.Target;
 
 @RequiredArgsConstructor
 @Component
-class ResourcePersistenceAdapter implements SaveResourcePort, LoadResourcePort {
+class ResourcePersistenceAdapter
+    implements SaveResourcePort, LoadResourcePort, DeleteResourcePort {
 
   private final ResourceJpaRepository jpaRepository;
 
@@ -47,6 +51,20 @@ class ResourcePersistenceAdapter implements SaveResourcePort, LoadResourcePort {
         .stream()
         .map(ResourceMapper::toDomain)
         .toList();
+  }
+
+  @Override
+  public List<Resource> findAllPendingUploadedBefore(Instant threshold) {
+    return this.jpaRepository.findAllByStatusAndUploadedAtBefore(ResourceStatus.PENDING, threshold)
+        .stream()
+        .map(ResourceMapper::toDomain)
+        .toList();
+  }
+
+  @Override
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void delete(Resource resource) {
+    this.jpaRepository.deleteById(resource.getId());
   }
 
 }

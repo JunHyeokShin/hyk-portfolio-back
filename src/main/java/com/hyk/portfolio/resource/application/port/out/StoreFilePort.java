@@ -7,4 +7,3 @@ public interface StoreFilePort {
   String store(String filename, InputStream content);
 
 }
-

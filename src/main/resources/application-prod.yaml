@@ -14,6 +14,9 @@ logging:
     name: ${LOGGING_FILE_NAME}
 
 resource:
+  purge:
+    retention: ${RESOURCE_PURGE_RETENTION}
+    cron: ${RESOURCE_PURGE_CRON}
   storage:
     mode: ${RESOURCE_STORAGE_MODE}
     local:

@@ -11,6 +11,7 @@ import com.hyk.portfolio.resource.application.port.in.UploadResourceResult;
 import com.hyk.portfolio.resource.application.port.in.UploadResourceUseCase;
 import com.hyk.portfolio.resource.application.port.out.SaveResourcePort;
 import com.hyk.portfolio.resource.application.port.out.StoreFilePort;
+import com.hyk.portfolio.resource.domain.model.Extension;
 import com.hyk.portfolio.resource.domain.model.Resource;
 
 @RequiredArgsConstructor
@@ -21,15 +22,13 @@ class UploadResourceService implements UploadResourceUseCase {
   private final StoreFilePort storeFilePort;
   private final SaveResourcePort saveResourcePort;
 
-  private static String generateFilename(String originalFilename) {
-    int dotIndex = originalFilename.lastIndexOf('.');
-    String extension = dotIndex >= 0 ? originalFilename.substring(dotIndex) : "";
-    return UUID.randomUUID() + extension;
+  private static String generateFilename(Extension extension) {
+    return UUID.randomUUID() + "." + extension.value();
   }
 
   @Override
   public UploadResourceResult upload(UploadResourceCommand command) {
-    String filename = generateFilename(command.originalFilename());
+    String filename = generateFilename(command.extension());
     String url = this.storeFilePort.store(filename, command.content());
     Resource resource = Resource.upload(filename, url);
     Resource saved = this.saveResourcePort.save(resource);

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ class WriteProjectController {
 
   private final WriteProjectUseCase writeProjectUseCase;
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/projects")
   ResponseEntity<WriteProjectResponse> write(@Valid @RequestBody WriteProjectRequest request) {
     Slug slug = this.writeProjectUseCase.write(request.toCommand());

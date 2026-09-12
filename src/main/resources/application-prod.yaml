@@ -13,6 +13,11 @@ logging:
   file:
     name: ${LOGGING_FILE_NAME}
 
+security:
+  api-key: ${SECURITY_API_KEY}
+  cors:
+    allowed-origins: ${SECURITY_CORS_ALLOWED_ORIGINS}
+
 resource:
   purge:
     retention: ${RESOURCE_PURGE_RETENTION}

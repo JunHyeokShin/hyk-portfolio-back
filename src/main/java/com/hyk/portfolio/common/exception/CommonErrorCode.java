@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum CommonErrorCode implements ErrorCode {
 
   INVALID_REQUEST("요청이 올바르지 않습니다", HttpStatus.BAD_REQUEST),
+  UNAUTHORIZED("인증이 필요합니다", HttpStatus.UNAUTHORIZED),
+  FORBIDDEN("접근 권한이 없습니다", HttpStatus.FORBIDDEN),
   FILE_TOO_LARGE("업로드 가능한 최대 크기를 초과했습니다", HttpStatus.CONTENT_TOO_LARGE);
 
   private final String message;

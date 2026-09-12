@@ -3,6 +3,7 @@ package com.hyk.portfolio.project.adapter.in.web;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ class UpdateProjectController {
     }
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PutMapping("/projects/{slug}")
   UpdateProjectResponse update(
       @PathVariable String slug,

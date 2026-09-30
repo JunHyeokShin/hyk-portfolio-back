@@ -1,0 +1,214 @@
+openapi: 3.1.0
+info:
+  title: HYK Portfolio API
+  version: 0.0.1-SNAPSHOT
+
+paths:
+  /projects:
+    get:
+      operationId: listProjects
+      parameters:
+        - { name: keyword, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer } }
+        - { name: size, in: query, schema: { type: integer } }
+        - { name: sort, in: query, schema: { type: array, items: { type: string } } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProjectSummaryPage' }
+        default: { $ref: '#/components/responses/Error' }
+
+    post:
+      operationId: writeProject
+      security: [ { ApiKey: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/WriteProjectRequest' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location: { required: true, schema: { type: string, format: uri-reference } }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WriteProjectResponse' }
+        default: { $ref: '#/components/responses/Error' }
+
+  /projects/{slug}:
+    parameters:
+      - { name: slug, in: path, required: true, schema: { type: string } }
+
+    get:
+      operationId: readProject
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ReadProjectResponse' }
+        default: { $ref: '#/components/responses/Error' }
+
+    put:
+      operationId: updateProject
+      security: [ { ApiKey: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateProjectRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UpdateProjectResponse' }
+        default: { $ref: '#/components/responses/Error' }
+
+    delete:
+      operationId: deleteProject
+      security: [ { ApiKey: [ ] } ]
+      responses:
+        '204': { description: No Content }
+        default: { $ref: '#/components/responses/Error' }
+
+  /resources:
+    post:
+      operationId: uploadResource
+      security: [ { ApiKey: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [ file ]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location: { required: true, schema: { type: string, format: uri } }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UploadResourceResponse' }
+        default: { $ref: '#/components/responses/Error' }
+
+components:
+  securitySchemes:
+    ApiKey: { type: apiKey, in: header, name: X-API-Key }
+
+  responses:
+    Error:
+      description: Error
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetail' }
+
+  schemas:
+    ProjectSummaryPage:
+      type: object
+      required: [ content, page ]
+      properties:
+        content:
+          type: array
+          items: { $ref: '#/components/schemas/ProjectSummaryResponse' }
+        page: { $ref: '#/components/schemas/PageMetadata' }
+
+    ProjectSummaryResponse:
+      type: object
+      required: [ slug, title, thumbnail, themeColor, description, createdAt, updatedAt ]
+      properties:
+        slug: { type: string }
+        title: { type: string }
+        thumbnail: { type: [ string, 'null' ] }
+        themeColor: { type: [ string, 'null' ] }
+        description: { type: [ string, 'null' ] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    WriteProjectRequest:
+      type: object
+      required: [ slug, title, content ]
+      properties:
+        slug: { type: string }
+        title: { type: string }
+        thumbnail: { type: [ string, 'null' ] }
+        themeColor: { type: [ string, 'null' ] }
+        description: { type: [ string, 'null' ] }
+        content: { type: string }
+
+    WriteProjectResponse:
+      type: object
+      required: [ slug ]
+      properties:
+        slug: { type: string }
+
+    ReadProjectResponse:
+      type: object
+      required: [ slug, title, thumbnail, themeColor, description, content, createdAt, updatedAt ]
+      properties:
+        slug: { type: string }
+        title: { type: string }
+        thumbnail: { type: [ string, 'null' ] }
+        themeColor: { type: [ string, 'null' ] }
+        description: { type: [ string, 'null' ] }
+        content: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    UpdateProjectRequest:
+      type: object
+      required: [ slug, title, content ]
+      properties:
+        slug: { type: string }
+        title: { type: string }
+        thumbnail: { type: [ string, 'null' ] }
+        themeColor: { type: [ string, 'null' ] }
+        description: { type: [ string, 'null' ] }
+        content: { type: string }
+
+    UpdateProjectResponse:
+      type: object
+      required: [ slug ]
+      properties:
+        slug: { type: string }
+
+    UploadResourceResponse:
+      type: object
+      required: [ id, url ]
+      properties:
+        id: { type: integer }
+        url: { type: string }
+
+    PageMetadata:
+      type: object
+      required: [ size, number, totalElements, totalPages ]
+      properties:
+        size: { type: integer }
+        number: { type: integer }
+        totalElements: { type: integer }
+        totalPages: { type: integer }
+
+    ProblemDetail:
+      type: object
+      required: [ title, status, detail, instance ]
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri-reference }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [ field, message ]
+            properties:
+              field: { type: string }
+              message: { type: string }
+      additionalProperties: true

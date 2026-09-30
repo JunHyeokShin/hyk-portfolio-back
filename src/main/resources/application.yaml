@@ -21,3 +21,9 @@ spring:
 
 server:
   forward-headers-strategy: framework
+
+scalar:
+  url: /api-docs.yaml
+  page-title: HYK Portfolio API Reference
+  document-download-type: direct
+  telemetry: false
